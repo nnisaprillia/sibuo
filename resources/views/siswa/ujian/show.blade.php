@@ -1,387 +1,414 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Detail Ujian') }}
-        </h2>
-    </x-slot>
+@extends('layouts.exam')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $ujian->bankSoal->nama_bank }}</h1>
-                            <p class="text-gray-600 dark:text-gray-400 mt-2">Mata Pelajaran: {{ $ujian->bankSoal->mataPelajaran->nama }}</p>
-                            <p class="text-gray-600 dark:text-gray-400">Guru: {{ $ujian->bankSoal->guru->name }}</p>
-                            <p class="text-gray-600 dark:text-gray-400">Kode Ujian: {{ $ujian->kode_ujian }}</p>
-                            <p class="text-gray-600 dark:text-gray-400">Status: {{ ucfirst($ujian->status) }}</p>
-                            <p class="text-gray-600 dark:text-gray-400">Durasi: {{ $ujian->bankSoal->durasi }} menit</p>
-                        </div>
-                        <a href="{{ route('siswa.ujian.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                            ← Kembali
-                        </a>
-                    </div>
+@section('content')
+    @if ($ujian->status === 'ongoing')
+        <!-- Topbar Ujian -->
+        <header class="h-14 bg-[#0f2744] flex items-center justify-between px-6 shrink-0 z-30">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-white text-sm font-medium leading-tight">{{ $ujian->bankSoal->nama_bank }}</h1>
+                    <p class="text-white/40 text-[10px] uppercase tracking-wider">{{ Auth::user()->name }} • Kelas {{ Auth::user()->kelas->nama_kelas ?? '-' }}</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div class="flex flex-col items-end">
+                    <p class="text-white/40 text-[10px] uppercase tracking-widest font-semibold">Sisa Waktu</p>
+                    <p id="timer" class="text-xl font-medium text-[#60A5FA] font-tabular leading-none mt-1">00:00:00</p>
+                </div>
+            </div>
+        </header>
 
-                    @if (session('success'))
-                        <div class="mb-4 p-4 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded text-green-700 dark:text-green-200">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-                    @if (session('error'))
-                        <div class="mb-4 p-4 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded text-red-700 dark:text-red-200">
-                            {{ session('error') }}
-                        </div>
-                    @endif
+        <!-- Security Bar -->
+        <div class="bg-[#FEF3C7] border-b border-yellow-200 px-6 py-2 flex items-center gap-2 z-20 shrink-0">
+            <svg class="w-4 h-4 text-[#92400E]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v3m0-3h3m-3 0H9m12-3a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            <p class="text-[11px] text-[#92400E] font-medium">Sesi ujian aktif — jangan berpindah tab atau halaman. Pelanggaran dicatat otomatis.</p>
+        </div>
 
-                    @if ($ujian->status === 'ongoing')
-                        @php
-                            $remaining = $expireAt->diffInSeconds(now());
-                        @endphp
-                        <div class="flex justify-between mb-6 p-6 rounded-lg bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700">
-                            <div class="text-gray-700 dark:text-yellow-100">
-                                <p class="font-semibold">Ujian sedang berlangsung.</p>
-                                <p>Waktu mulai: {{ $ujian->waktu_mulai->format('d M Y H:i') }}</p>
-                                <p>Batas waktu: {{ $expireAt->format('d M Y H:i') }}</p>
-                            </div>
-                            <div class="text-gray-700 dark:text-yellow-100">
-                                <p>Sisa waktu:<br><span style="font-size: 30px;" id="remaining-time">{{ floor($remaining / 60) }} menit {{ $remaining % 60 }} detik</span></p>
-                            </div>
-                        </div>
-                    @elseif ($ujian->status === 'completed' && $ujian->hasilUjian)
-                        <div class="mb-6 p-6 rounded-lg bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700">
-                            <div class="text-center">
-                                <p class="text-xl font-bold text-blue-800 dark:text-blue-200">Ujian Telah Selesai</p>
-                                <p class="text-gray-600 dark:text-gray-300 mt-2">Terima kasih telah mengerjakan ujian ini.</p>
-                                <p class="text-gray-600 dark:text-gray-300">Selesai pada: {{ $ujian->waktu_selesai?->format('d M Y H:i') }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-4 italic">Nilai dan detail jawaban akan diinformasikan oleh guru mata pelajaran.</p>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if ($ujian->bankSoal->soal->isEmpty())
-                        <p class="text-gray-600 dark:text-gray-400">Belum ada soal di bank soal ini. Silakan hubungi guru Anda.</p>
-                    @else
-                        @if ($ujian->status === 'ongoing')
-                            <form id="exam-form" action="{{ route('siswa.ujian.submit', $ujian) }}" method="POST" onsubmit="return false;">
-                                @csrf
-                                <div id="questions-container" class="space-y-6">
-                                    @foreach ($ujian->bankSoal->soal as $index => $soal)
-                                        <div class="question bg-white dark:bg-gray-900 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6" data-index="{{ $index }}" style="display: none;">
-                                            <div class="flex justify-between items-start mb-4">
-                                                <div>
-                                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Soal {{ $index + 1 }} dari {{ $ujian->bankSoal->soal->count() }}</h3>
-                                                </div>
-                                            </div>
-
-                                            <p class="text-gray-700 dark:text-gray-300 mb-4">{{ $soal->pertanyaan }}</p>
-
-                                            @php
-                                                $options = [
-                                                    'a' => $soal->pilihan_a,
-                                                    'b' => $soal->pilihan_b,
-                                                    'c' => $soal->pilihan_c,
-                                                    'd' => $soal->pilihan_d,
-                                                ];
-                                            @endphp
-
-                                            <div class="grid gap-3">
-                                                @foreach ($options as $key => $option)
-                                                    <label class="cursor-pointer rounded-lg border border-gray-200 dark:border-gray-700 p-3 hover:border-blue-500 dark:hover:border-blue-400">
-                                                        <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" class="mr-2 option-input" data-soal-id="{{ $soal->id }}" {{ isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key ? 'checked' : '' }}>
-                                                        <span class="text-gray-700 dark:text-gray-200"><strong>{{ strtoupper($key) }}.</strong> {{ $option }}</span>
-                                                    </label>
-                                                @endforeach
-                                                @error('answers.' . $soal->id)
-                                                    <p class="text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-
-                                            <div class="mt-4 flex items-center justify-between">
-                                                <div class="flex items-center gap-3">
-                                                    <label class="inline-flex items-center text-sm text-gray-700 dark:text-gray-300">
-                                                        <input type="checkbox" class="mark-review" data-soal-id="{{ $soal->id }}" {{ isset($markedMap[$soal->id]) && $markedMap[$soal->id] ? 'checked' : '' }}> <span class="ml-2">Tandai untuk review</span>
-                                                    </label>
-                                                    <input type="hidden" name="marked[{{ $soal->id }}]" value="{{ isset($markedMap[$soal->id]) && $markedMap[$soal->id] ? '1' : '0' }}" class="marked-input" data-soal-id="{{ $soal->id }}">
-                                                </div>
-                                                <div class="text-sm text-gray-500 dark:text-gray-400">ID Soal: {{ $soal->id }}</div>
-                                            </div>
+        <div class="flex-1 flex overflow-hidden">
+            <!-- Main Content: Soal -->
+            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-white">
+                <form id="exam-form" action="{{ route('siswa.ujian.submit', $ujian) }}" method="POST">
+                    @csrf
+                    <div id="questions-container">
+                        @foreach ($ujian->bankSoal->soal as $index => $soal)
+                            <div class="question-item hidden" data-index="{{ $index }}" data-soal-id="{{ $soal->id }}">
+                                <div class="flex items-start gap-5 mb-8">
+                                    <div class="w-10 h-10 bg-[#0f2744] text-white rounded-full flex items-center justify-center font-medium shrink-0 shadow-lg shadow-blue-900/10">
+                                        {{ $index + 1 }}
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="prose prose-sm max-w-none text-gray-800 leading-relaxed text-sm">
+                                            {!! nl2br(e($soal->pertanyaan)) !!}
                                         </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 gap-3">
+                                    @php
+                                        $options = [
+                                            'a' => $soal->pilihan_a,
+                                            'b' => $soal->pilihan_b,
+                                            'c' => $soal->pilihan_c,
+                                            'd' => $soal->pilihan_d,
+                                        ];
+                                    @endphp
+
+                                    @foreach ($options as $key => $option)
+                                        <label class="group relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-all active:scale-[0.99]">
+                                            <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" 
+                                                class="hidden option-input" 
+                                                data-soal-id="{{ $soal->id }}" 
+                                                {{ (isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key) ? 'checked' : '' }}>
+                                            
+                                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 group-hover:border-blue-500 transition-colors radio-circle">
+                                                <div class="w-3 h-3 bg-blue-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
+                                            </div>
+                                            
+                                            <div class="flex-1">
+                                                <span class="text-xs font-bold text-gray-400 mr-2">{{ strtoupper($key) }}.</span>
+                                                <span class="text-sm text-gray-700">{{ $option }}</span>
+                                            </div>
+                                        </label>
                                     @endforeach
                                 </div>
-
-                                <div class="mt-6 flex items-center justify-between">
-                                    <div>
-                                        <button type="button" id="prev-btn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" disabled>Prev</button>
-                                        <button type="button" id="next-btn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Next</button>
-                                    </div>
-
-                                    <div>
-                                        <button type="button" id="finish-btn" class="bg-green-600 text-white px-5 py-3 rounded hover:bg-green-700">Selesaikan Ujian</button>
-                                    </div>
-                                </div>
-
-                                <!-- Summary modal -->
-                                <div id="summary-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
-                                    <div class="absolute inset-0 bg-black opacity-50"></div>
-                                    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 z-10 max-w-lg w-full">
-                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Ringkasan Sebelum Mengirim</h3>
-                                        <div class="mb-4 text-sm text-gray-700 dark:text-gray-300">
-                                            <div class="grid grid-cols-[56px_minmax(0,1fr)_84px] gap-4 font-semibold border-b border-gray-200 dark:border-gray-700 px-3 pb-2 mb-2 text-gray-900 dark:text-gray-100 items-center">
-                                                <div class="truncate">Nomor</div>
-                                                <div class="truncate">Status</div>
-                                                <div class="text-right truncate">Aksi</div>
-                                            </div>
-                                            <div id="summary-list" class="space-y-2 max-h-72 overflow-y-auto"></div>
-                                        </div>
-                                        <p id="summary-warning" class="text-sm text-red-600 dark:text-red-400 mb-4 hidden">Masih ada soal yang belum dijawab. Lengkapi jawaban terlebih dahulu untuk mengaktifkan tombol kirim.</p>
-                                        <div class="flex justify-end gap-3">
-                                            <button type="button" id="cancel-submit" class="px-4 py-2 rounded border">Batal</button>
-                                            <button type="button" id="confirm-submit" class="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed" disabled>Kirim Jawaban</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <!-- Block Modal for Tab Switching -->
-                            <div id="block-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
-                                <div class="absolute inset-0 bg-red-900 opacity-95"></div>
-                                <div class="bg-white dark:bg-gray-800 rounded-lg p-8 z-10 max-w-lg w-full text-center shadow-2xl">
-                                    <div class="mb-4 text-red-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 15c-.77 1.333.192 3 1.732 3z" />
-                                        </svg>
-                                    </div>
-                                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">AKSES DIBLOKIR!</h3>
-                                    <p class="text-gray-700 dark:text-gray-300 mb-6">Anda terdeteksi meninggalkan halaman ujian. Pelanggaran telah dicatat. Silakan masukkan Kode Ujian untuk melanjutkan.</p>
-                                    
-                                    <div class="mb-4">
-                                        <input type="text" id="unlock-code" placeholder="Masukkan Kode Ujian (XXX-XXX)" class="w-full p-3 border rounded text-center font-bold text-xl uppercase dark:bg-gray-700 dark:text-white">
-                                        <p id="unlock-error" class="text-red-600 text-sm mt-2 hidden">Kode Ujian salah atau sudah kedaluwarsa!</p>
-                                    </div>
-                                    
-                                    <button type="button" id="unlock-btn" class="w-full bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700 transition">
-                                        BUKA BLOKIR & LANJUTKAN
-                                    </button>
-                                    
-                                    <p class="mt-4 text-xs text-gray-500">Catatan: Setiap pelanggaran terekam di sistem dan dapat mempengaruhi penilaian atau status ujian Anda.</p>
-                                </div>
                             </div>
-                        @else
-                            {{-- When completed, do not reveal answers or scores to students --}}
-                            <div class="p-6 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
-                                <p class="text-gray-700 dark:text-gray-300">Ujian telah selesai pada {{ $ujian->waktu_selesai?->format('d M Y H:i') }}. Nilai dan kunci jawaban tidak ditampilkan untuk peserta.</p>
-                                <p class="text-gray-600 dark:text-gray-400 mt-2">Jika Anda membutuhkan klarifikasi mengenai hasil, silakan hubungi guru Anda.</p>
+                        @endforeach
+                    </div>
+                </form>
+            </main>
+
+            <!-- Sidebar: Navigasi Soal -->
+            <aside class="w-72 bg-gray-50 border-l border-gray-200 flex flex-col shrink-0 overflow-hidden">
+                <div class="p-5 border-b border-gray-200 bg-white">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Navigasi Soal</h3>
+                    
+                    <div class="grid grid-cols-5 gap-2" id="navigator-grid">
+                        @foreach ($ujian->bankSoal->soal as $index => $soal)
+                            <button type="button" 
+                                class="nav-btn w-full aspect-square rounded-lg border flex items-center justify-center text-xs font-medium transition-all"
+                                data-index="{{ $index }}"
+                                data-soal-id="{{ $soal->id }}">
+                                {{ $index + 1 }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="p-5 flex-1 overflow-y-auto custom-scrollbar">
+                    <div class="space-y-4 mb-8">
+                        <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Keterangan</h4>
+                        <div class="space-y-2.5">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-md border-2 border-gray-200"></div>
+                                <span class="text-[10px] text-gray-500">Belum dijawab</span>
                             </div>
-                        @endif
-                    @endif
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-md bg-[#EFF6FF] border-2 border-blue-500"></div>
+                                <span class="text-[10px] text-gray-500">Sudah dijawab</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-md bg-[#0f2744] border-2 border-[#0f2744]"></div>
+                                <span class="text-[10px] text-gray-500">Sedang dikerjakan</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-md bg-[#FFFBEB] border-2 border-yellow-400"></div>
+                                <span class="text-[10px] text-gray-500">Ditandai ragu</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-white border border-gray-200 rounded-xl">
+                        <p class="text-[10px] text-gray-400 font-medium mb-2 uppercase tracking-wide">Progress Jawaban</p>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
+                            <div id="progress-bar" class="bg-blue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <p class="text-[10px] font-medium text-gray-600" id="progress-text">0/{{ $ujian->bankSoal->soal->count() }} soal dijawab</p>
+                    </div>
+                </div>
+
+                <div class="p-5 border-t border-gray-200 bg-white space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <button type="button" id="prev-btn" class="flex-1 px-4 py-2 border border-gray-200 text-gray-600 text-[10px] font-bold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-30">
+                            PREV
+                        </button>
+                        <button type="button" id="flag-btn" class="px-4 py-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-[10px] font-bold rounded-lg hover:bg-yellow-100 transition-colors">
+                            ⚑ RAGU
+                        </button>
+                        <button type="button" id="next-btn" class="flex-1 px-4 py-2 border border-gray-200 text-gray-600 text-[10px] font-bold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-30">
+                            NEXT
+                        </button>
+                    </div>
+                    <button type="button" id="finish-btn" class="w-full py-3 bg-[#0f2744] text-white text-[11px] font-bold rounded-xl hover:bg-[#1a3a5c] transition-colors shadow-lg shadow-blue-900/10">
+                        KUMPULKAN UJIAN
+                    </button>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Modals -->
+        <x-confirm-modal id="submit-confirm" title="Kumpulkan Jawaban?" message="Pastikan semua soal telah dijawab dengan benar. Setelah dikumpulkan, Anda tidak dapat mengubah jawaban lagi." type="info">
+            <x-slot name="footer">
+                <button type="button" id="confirm-submit-btn" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-[#0f2744] text-sm font-medium text-white hover:bg-[#1a3a5c] focus:outline-none sm:ml-3 sm:w-auto">
+                    Ya, Kumpulkan
+                </button>
+                <button type="button" @click="$dispatch('close-submit-confirm')" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto">
+                    Batal
+                </button>
+            </x-slot>
+        </x-confirm-modal>
+
+        <!-- Block Modal for Violations -->
+        <div id="block-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+            <div class="absolute inset-0 bg-red-900/90 backdrop-blur-md"></div>
+            <div class="bg-white rounded-2xl p-8 z-10 max-w-md w-full text-center shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-red-600"></div>
+                <div class="mb-6">
+                    <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900">Pelanggaran Terdeteksi</h3>
+                    <p class="text-xs text-gray-500 mt-2">Anda terdeteksi meninggalkan halaman ujian atau berpindah aplikasi. Masukkan kode ujian untuk melanjutkan.</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <input type="text" id="unlock-code" placeholder="KODE-XXX" 
+                        class="w-full h-12 text-center text-xl font-mono border-2 border-gray-100 rounded-xl focus:border-red-500 focus:outline-none uppercase tracking-widest">
+                    <p id="unlock-error" class="text-[10px] text-red-600 font-medium hidden">Kode tidak valid atau sudah kedaluwarsa</p>
+                    <button type="button" id="unlock-btn" class="w-full h-12 bg-red-600 text-white text-sm font-bold rounded-xl hover:bg-red-700 transition-all shadow-lg shadow-red-900/10">
+                        VERIFIKASI & LANJUTKAN
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
-
-    <script>
-        (function(){
-            const remainingTimeElement = document.getElementById('remaining-time');
-            if (remainingTimeElement && typeof {{ $expireAt->timestamp ?? 'null' }} === 'number') {
-                const expiryMs = {{ ($expireAt->timestamp ?? 0) * 1000 }};
-                const updateRemaining = () => {
-                    const diffSeconds = Math.max(0, Math.floor((expiryMs - Date.now()) / 1000));
-                    const minutes = Math.floor(diffSeconds / 60);
-                    const seconds = diffSeconds % 60;
-                    remainingTimeElement.textContent = `${minutes} menit ${seconds.toString().padStart(2, '0')} detik`;
-                };
-                updateRemaining();
-                setInterval(updateRemaining, 1000);
-            }
-
-            // One-question pagination
-            const questions = Array.from(document.querySelectorAll('.question'));
-            if (questions.length === 0) return;
-            let current = 0;
-            const show = (i) => {
-                questions.forEach(q=>q.style.display='none');
-                questions[i].style.display='block';
-                document.getElementById('prev-btn').disabled = i===0;
-                document.getElementById('next-btn').disabled = i===questions.length-1;
-            };
-            show(0);
-
-            document.getElementById('next-btn').addEventListener('click', ()=>{ if(current<questions.length-1){ current++; show(current); } });
-            document.getElementById('prev-btn').addEventListener('click', ()=>{ if(current>0){ current--; show(current); } });
-
-            // Mark for review handling
-            document.querySelectorAll('.mark-review').forEach(cb=>{
-                cb.addEventListener('change', function(){
-                    const id = this.getAttribute('data-soal-id');
-                    const hidden = document.querySelector('.marked-input[data-soal-id="'+id+'"]');
-                    if (hidden) hidden.value = this.checked ? '1' : '0';
-                    saveAnswer(id);
-                });
-            });
-
-            // AJAX Answer Saving
-            const saveAnswer = (soalId) => {
-                const selectedOption = document.querySelector(`input[name="answers[${soalId}]"]:checked`);
-                const markedInput = document.querySelector(`.mark-review[data-soal-id="${soalId}"]`);
+    @else
+        <!-- Kondisi Selesai Ujian -->
+        <div class="flex-1 flex items-center justify-center p-6 bg-gray-50">
+            <div class="w-full max-w-md bg-white border border-gray-200 rounded-3xl p-10 text-center shadow-sm">
+                <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h2 class="text-2xl font-medium text-gray-900">Ujian Selesai!</h2>
+                <p class="text-sm text-gray-500 mt-2">Terima kasih telah mengerjakan ujian dengan jujur.</p>
                 
-                const data = {
-                    soal_id: soalId,
-                    jawaban: selectedOption ? selectedOption.value : null,
-                    marked: markedInput ? markedInput.checked : false,
-                    _token: '{{ csrf_token() }}'
-                };
-                
-                fetch('{{ route("siswa.ujian.answer", $ujian) }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .catch(error => console.error('Error saving answer:', error));
-            };
+                <div class="mt-8 p-6 bg-gray-50 rounded-2xl text-left space-y-4 border border-gray-100">
+                    <div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Nama Ujian</p>
+                        <p class="text-sm font-medium text-gray-900">{{ $ujian->bankSoal->nama_bank }}</p>
+                    </div>
+                    <div class="flex justify-between gap-4">
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Waktu Selesai</p>
+                            <p class="text-xs font-medium text-gray-700">{{ $ujian->waktu_selesai?->format('H:i') }} WIB</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Total Pelanggaran</p>
+                            <p class="text-xs font-medium text-gray-700">{{ $ujian->pelanggaran }} Kali</p>
+                        </div>
+                    </div>
+                </div>
 
-            document.querySelectorAll('.option-input').forEach(input => {
-                input.addEventListener('change', function() {
-                    saveAnswer(this.getAttribute('data-soal-id'));
-                });
-            });
+                <p class="mt-8 text-xs text-gray-400 leading-relaxed italic">
+                    Nilai dan detail jawaban akan tersedia setelah guru mengumumkan hasil pengerjaan.
+                </p>
 
-            // Session Security: Tab Switch Detection & Re-authentication
-            const blockModal = document.getElementById('block-modal');
-            const unlockCodeInput = document.getElementById('unlock-code');
-            const unlockBtn = document.getElementById('unlock-btn');
-            const unlockError = document.getElementById('unlock-error');
+                <a href="{{ route('siswa.ujian.index') }}" class="mt-10 w-full h-12 bg-[#0f2744] text-white text-sm font-medium rounded-xl hover:bg-[#1a3a5c] transition-colors flex items-center justify-center shadow-lg shadow-blue-900/10">
+                    Kembali ke Beranda
+                </a>
+            </div>
+        </div>
+    @endif
+@endsection
+
+@push('scripts')
+@if($ujian->status === 'ongoing')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // State management
+    const totalSoal = {{ $ujian->bankSoal->soal->count() }};
+    let currentIndex = 0;
+    const answerMap = @json($answerMap);
+    const markedMap = @json($markedMap);
+    
+    // Elements
+    const questionItems = document.querySelectorAll('.question-item');
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const flagBtn = document.getElementById('flag-btn');
+    const timerEl = document.getElementById('timer');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    
+    // 1. Navigation Logic
+    function showQuestion(index) {
+        questionItems.forEach(item => item.classList.add('hidden'));
+        questionItems[index].classList.remove('hidden');
+        
+        currentIndex = index;
+        updateNavButtons();
+        
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSoal - 1;
+    }
+
+    function updateNavButtons() {
+        navButtons.forEach((btn, i) => {
+            const soalId = btn.dataset.soalId;
+            const isAnswered = answerMap[soalId] != null;
+            const isFlagged = markedMap[soalId] == true;
+            const isCurrent = i === currentIndex;
             
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    // Record violation to server
-                    fetch('{{ route("siswa.ujian.violation", $ujian) }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    });
+            // Default classes
+            btn.className = 'nav-btn w-full aspect-square rounded-lg border flex items-center justify-center text-xs font-medium transition-all ';
+            
+            if (isCurrent) {
+                btn.classList.add('bg-[#0f2744]', 'text-white', 'border-[#0f2744]', 'ring-2', 'ring-offset-1', 'ring-[#0f2744]');
+            } else if (isFlagged) {
+                btn.classList.add('bg-[#FFFBEB]', 'text-yellow-800', 'border-yellow-400');
+            } else if (isAnswered) {
+                btn.classList.add('bg-[#EFF6FF]', 'text-blue-700', 'border-blue-500');
+            } else {
+                btn.classList.add('bg-white', 'text-gray-500', 'border-gray-200', 'hover:border-gray-300');
+            }
+        });
+        
+        // Update current question radio UI
+        const currentSoalId = questionItems[currentIndex].dataset.soalId;
+        const radios = questionItems[currentIndex].querySelectorAll('.option-input');
+        radios.forEach(radio => {
+            const container = radio.closest('label');
+            const circle = container.querySelector('.radio-circle');
+            const dot = container.querySelector('.radio-dot');
+            
+            if (radio.checked) {
+                container.classList.add('border-blue-500', 'bg-[#EFF6FF]');
+                circle.classList.add('border-blue-500');
+                dot.classList.remove('opacity-0');
+            } else {
+                container.classList.remove('border-blue-500', 'bg-[#EFF6FF]');
+                circle.classList.remove('border-blue-500');
+                dot.classList.add('opacity-0');
+            }
+        });
 
-                    // Show block modal
-                    blockModal.classList.remove('hidden');
-                    blockModal.style.display = 'flex';
-                }
+        // Update progress
+        const answeredCount = Object.values(answerMap).filter(v => v != null).length;
+        progressBar.style.width = `${(answeredCount / totalSoal) * 100}%`;
+        progressText.innerText = `${answeredCount}/${totalSoal} soal dijawab`;
+    }
+
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => showQuestion(parseInt(btn.dataset.index)));
+    });
+
+    prevBtn.addEventListener('click', () => { if(currentIndex > 0) showQuestion(currentIndex - 1); });
+    nextBtn.addEventListener('click', () => { if(currentIndex < totalSoal - 1) showQuestion(currentIndex + 1); });
+
+    // 2. Timer Countdown
+    const expiryMs = {{ $expireAt->timestamp }} * 1000;
+    function updateTimer() {
+        const now = Date.now();
+        const diff = Math.max(0, expiryMs - now);
+        
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        
+        timerEl.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        
+        if (diff < 600000 && diff > 0) { // < 10 mins
+            timerEl.classList.remove('text-[#60A5FA]');
+            timerEl.classList.add('text-red-500', 'animate-pulse');
+        }
+        
+        if (diff === 0) {
+            alert('Waktu habis! Jawaban Anda akan otomatis dikirim.');
+            document.getElementById('exam-form').submit();
+        }
+    }
+    setInterval(updateTimer, 1000);
+    updateTimer();
+
+    // 3. Auto-Save Answer
+    document.querySelectorAll('.option-input').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const soalId = this.dataset.soalId;
+            const val = this.value;
+            answerMap[soalId] = val;
+            saveToServer(soalId, val, markedMap[soalId] || false);
+            updateNavButtons();
+        });
+    });
+
+    flagBtn.addEventListener('click', () => {
+        const soalId = questionItems[currentIndex].dataset.soalId;
+        markedMap[soalId] = !markedMap[soalId];
+        saveToServer(soalId, answerMap[soalId], markedMap[soalId]);
+        updateNavButtons();
+    });
+
+    function saveToServer(soalId, jawaban, marked) {
+        fetch('{{ route("siswa.ujian.answer", $ujian) }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            body: JSON.stringify({ soal_id: soalId, jawaban: jawaban, marked: marked })
+        });
+    }
+
+    // 4. Tab Switch Detection
+    const blockModal = document.getElementById('block-modal');
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            fetch('{{ route("siswa.ujian.violation", $ujian) }}', { 
+                method: 'POST', 
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } 
             });
+            blockModal.classList.remove('hidden');
+            blockModal.classList.add('flex');
+        }
+    });
 
-            unlockBtn.addEventListener('click', () => {
-                const code = unlockCodeInput.value.toUpperCase();
-                
-                unlockBtn.disabled = true;
-                unlockBtn.textContent = 'MEMVERIFIKASI...';
-                
-                fetch('{{ route("siswa.ujian.verify-code", $ujian) }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ kode_ujian: code })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        blockModal.classList.add('hidden');
-                        blockModal.style.display = 'none';
-                        unlockError.classList.add('hidden');
-                        unlockCodeInput.value = '';
-                    } else {
-                        unlockError.classList.remove('hidden');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error verifying code:', error);
-                    unlockError.textContent = 'Terjadi kesalahan sistem. Silakan coba lagi.';
-                    unlockError.classList.remove('hidden');
-                })
-                .finally(() => {
-                    unlockBtn.disabled = false;
-                    unlockBtn.textContent = 'BUKA BLOKIR & LANJUTKAN';
-                });
-            });
+    document.getElementById('unlock-btn').addEventListener('click', () => {
+        const code = document.getElementById('unlock-code').value.toUpperCase();
+        fetch('{{ route("siswa.ujian.verify-code", $ujian) }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            body: JSON.stringify({ kode_ujian: code })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                blockModal.classList.add('hidden');
+                blockModal.classList.remove('flex');
+                document.getElementById('unlock-code').value = '';
+                document.getElementById('unlock-error').classList.add('hidden');
+            } else {
+                document.getElementById('unlock-error').classList.remove('hidden');
+            }
+        });
+    });
 
-            // Prevent Back Button
-            window.history.pushState(null, null, window.location.href);
-            window.onpopstate = function() {
-                window.history.go(1);
-            };
+    // 5. Prevent Back & Submit Confirmation
+    history.pushState(null, null, location.href);
+    window.addEventListener('popstate', () => history.pushState(null, null, location.href));
 
-            // Finish button -> show summary modal
-            const finishBtn = document.getElementById('finish-btn');
-            const summaryModal = document.getElementById('summary-modal');
-            const summaryList = document.getElementById('summary-list');
-            const summaryWarning = document.getElementById('summary-warning');
-            const confirmSubmit = document.getElementById('confirm-submit');
+    document.getElementById('finish-btn').addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('confirm-submit-confirm'));
+    });
 
-            const buildSummary = () => {
-                summaryList.innerHTML = '';
-                let hasUnanswered = false;
+    document.getElementById('confirm-submit-btn').addEventListener('click', () => {
+        document.getElementById('exam-form').submit();
+    });
 
-                questions.forEach((q, index) => {
-                    const soalId = q.querySelector('.option-input')?.getAttribute('data-soal-id') || index;
-                    const selectedOption = q.querySelector(`input[name="answers[${soalId}]"]:checked`);
-                    const markedInput = q.querySelector(`.marked-input[data-soal-id="${soalId}"]`);
-                    const marked = markedInput && markedInput.value === '1';
-                    let status = 'Not Answered';
-
-                    if (selectedOption) {
-                        status = marked ? 'Answered & Marked for Review' : 'Answered';
-                    } else if (marked) {
-                        status = 'Review Later';
-                    } else {
-                        hasUnanswered = true;
-                    }
-
-                    const row = document.createElement('button');
-                    row.type = 'button';
-                    row.className = 'w-full grid grid-cols-[56px_minmax(0,1fr)_84px] gap-4 items-center rounded-lg px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800';
-                    row.style.gridAutoColumns = '56px minmax(0,1fr) 84px';
-                    row.dataset.index = index;
-                    row.innerHTML = `
-                        <div class="font-semibold text-gray-900 dark:text-gray-100">${index + 1}.</div>
-                        <div class="text-sm text-gray-700 dark:text-gray-300 truncate">${status}</div>
-                        <div class="text-sm text-indigo-600 dark:text-indigo-400 text-right">Lihat</div>
-                    `;
-                    row.addEventListener('click', () => {
-                        current = index;
-                        show(current);
-                        summaryModal.classList.add('hidden');
-                        summaryModal.style.display = 'none';
-                    });
-
-                    summaryList.appendChild(row);
-                });
-
-                summaryWarning.classList.toggle('hidden', !hasUnanswered);
-                confirmSubmit.disabled = hasUnanswered;
-            };
-
-            finishBtn && finishBtn.addEventListener('click', ()=>{
-                buildSummary();
-                summaryModal.classList.remove('hidden');
-                summaryModal.style.display = 'flex';
-            });
-
-            document.getElementById('cancel-submit').addEventListener('click', ()=>{
-                summaryModal.classList.add('hidden');
-                summaryModal.style.display = 'none';
-            });
-
-            document.getElementById('confirm-submit').addEventListener('click', ()=>{
-                if (!confirmSubmit.disabled) {
-                    document.getElementById('exam-form').submit();
-                }
-            });
-        })();
-    </script>
-</x-app-layout>
+    // Initialize
+    showQuestion(0);
+});
+</script>
+@endif
+@endpush

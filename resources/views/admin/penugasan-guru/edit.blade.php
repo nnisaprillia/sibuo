@@ -1,60 +1,78 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Edit Penugasan Guru') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app', ['active' => 'penugasan-guru', 'title' => 'Edit Penugasan'])
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form method="POST" action="{{ route('admin.penugasan-guru.update', $penugasan) }}">
-                        @csrf
-                        @method('PUT')
-                        <div class="mb-4">
-                            <label for="guru_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Guru</label>
-                            <select name="guru_id" id="guru_id" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                                <option value="">Pilih Guru</option>
-                                @foreach($gurus as $guru)
-                                    <option value="{{ $guru->id }}" {{ old('guru_id', $penugasan->guru_id) == $guru->id ? 'selected' : '' }}>{{ $guru->name }} ({{ $guru->email }})</option>
-                                @endforeach
-                            </select>
-                            @error('guru_id')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="mb-4">
-                            <label for="mata_pelajaran_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mata Pelajaran</label>
-                            <select name="mata_pelajaran_id" id="mata_pelajaran_id" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                                <option value="">Pilih Mata Pelajaran</option>
-                                @foreach($mataPelajarans as $mp)
-                                    <option value="{{ $mp->id }}" {{ old('mata_pelajaran_id', $penugasan->mata_pelajaran_id) == $mp->id ? 'selected' : '' }}>{{ $mp->nama }}</option>
-                                @endforeach
-                            </select>
-                            @error('mata_pelajaran_id')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="mb-4">
-                            <label for="kelas_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kelas</label>
-                            <select name="kelas_id" id="kelas_id" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                                <option value="">Pilih Kelas</option>
-                                @foreach($kelas as $k)
-                                    <option value="{{ $k->id }}" {{ old('kelas_id', $penugasan->kelas_id) == $k->id ? 'selected' : '' }}>{{ $k->nama_kelas }} ({{ $k->tingkat }})</option>
-                                @endforeach
-                            </select>
-                            @error('kelas_id')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="flex items-center justify-end">
-                            <a href="{{ route('admin.penugasan-guru.index') }}" class="mr-4 text-gray-600 dark:text-gray-400">Batal</a>
-                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Update</button>
-                        </div>
-                    </form>
-                </div>
+@section('breadcrumb')
+    <div class="flex items-center gap-2 text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
+        <a href="{{ route('admin.penugasan-guru.index') }}" class="hover:text-blue-500 transition-colors">Penugasan Guru</a>
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        <span class="text-gray-900">Edit Penugasan</span>
+    </div>
+@endsection
+
+@section('content')
+    <div class="max-w-xl mx-auto">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-gray-100 bg-gray-50/50">
+                <h3 class="text-sm font-medium text-gray-900">Edit Data Penugasan</h3>
+                <p class="text-[10px] text-gray-500 mt-0.5">Perbarui informasi penugasan guru yang sudah ada</p>
             </div>
+            
+            <form method="POST" action="{{ route('admin.penugasan-guru.update', $penugasan) }}" class="p-5 space-y-4">
+                @csrf
+                @method('PATCH')
+
+                <div class="space-y-1">
+                    <label for="guru_id" class="block text-xs font-medium text-gray-500">Pilih Guru</label>
+                    <select name="guru_id" id="guru_id" required
+                        class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors">
+                        <option value="">Pilih Guru</option>
+                        @foreach($gurus as $guru)
+                            <option value="{{ $guru->id }}" {{ old('guru_id', $penugasan->guru_id) == $guru->id ? 'selected' : '' }}>{{ $guru->name }} ({{ $guru->email }})</option>
+                        @endforeach
+                    </select>
+                    @error('guru_id')
+                        <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label for="mata_pelajaran_id" class="block text-xs font-medium text-gray-500">Mata Pelajaran</label>
+                        <select name="mata_pelajaran_id" id="mata_pelajaran_id" required
+                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors">
+                            <option value="">Pilih Mata Pelajaran</option>
+                            @foreach($mataPelajarans as $mp)
+                                <option value="{{ $mp->id }}" {{ old('mata_pelajaran_id', $penugasan->mata_pelajaran_id) == $mp->id ? 'selected' : '' }}>{{ $mp->nama }}</option>
+                            @endforeach
+                        </select>
+                        @error('mata_pelajaran_id')
+                            <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="space-y-1">
+                        <label for="kelas_id" class="block text-xs font-medium text-gray-500">Kelas</label>
+                        <select name="kelas_id" id="kelas_id" required
+                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors">
+                            <option value="">Pilih Kelas</option>
+                            @foreach($kelas as $k)
+                                <option value="{{ $k->id }}" {{ old('kelas_id', $penugasan->kelas_id) == $k->id ? 'selected' : '' }}>{{ $k->nama_kelas }} ({{ $k->tingkat }})</option>
+                            @endforeach
+                        </select>
+                        @error('kelas_id')
+                            <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="pt-4 flex items-center justify-end gap-3 border-t border-gray-100">
+                    <a href="{{ route('admin.penugasan-guru.index') }}" class="px-4 py-2 border border-gray-200 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        Batal
+                    </a>
+                    <button type="submit" class="px-4 py-2 bg-[#0f2744] text-white text-xs font-medium rounded-lg hover:bg-[#1a3a5c] transition-colors shadow-lg shadow-blue-900/10">
+                        Perbarui Penugasan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</x-app-layout>
+@endsection
