@@ -8,7 +8,7 @@
         </div>
         @if($icon)
             <div class="p-2 bg-gray-50 rounded-lg text-gray-400">
-                {{ $icon }}
+             {!! $icon !!}
             </div>
         @endif
     </div>
