@@ -19,7 +19,10 @@ class JurusanSeeder extends Seeder
         ];
 
         foreach ($jurusan as $j) {
-            \App\Models\Jurusan::create($j);
+            \App\Models\Jurusan::updateOrCreate(
+                ['nama_jurusan' => $j['nama_jurusan']],
+                $j
+            );
         }
     }
 }
