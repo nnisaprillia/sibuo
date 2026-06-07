@@ -29,7 +29,7 @@
         <div class="lg:col-span-8 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-medium text-gray-900">Bank Soal Aktif</h3>
-                <a href="{{ route('guru.bank-soal.create') }}" class="px-3 py-1.5 bg-[#0f2744] text-white text-[10px] font-medium rounded-lg hover:bg-[#1a3a5c] transition-colors flex items-center gap-1.5">
+                <a href="{{ route('guru.bank-soal.create') }}" class="px-3 py-1.5 bg-primary text-white text-[10px] font-medium rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Buat Baru
                 </a>
@@ -57,7 +57,7 @@
                                 </td>
                                 <td class="py-3 text-center text-gray-600 font-medium">{{ $bank->soal->count() }}</td>
                                 <td class="py-3 text-center">
-                                    <span class="font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">{{ $bank->kode_ujian }}</span>
+                                    <span class="font-mono text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">{{ $bank->kode_ujian }}</span>
                                 </td>
                                 <td class="py-3 text-center">
                                     @php
@@ -79,7 +79,7 @@
                                 </td>
                                 <td class="py-3 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <a href="{{ route('guru.bank-soal.show', $bank->id) }}" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Kelola">
+                                        <a href="{{ route('guru.bank-soal.show', $bank->id) }}" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Kelola">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
                                         </a>
                                         <a href="{{ route('guru.hasil-by-bank-soal', $bank->id) }}" class="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Hasil">
@@ -106,14 +106,14 @@
             
             <div class="space-y-3">
                 @forelse($upcomingExams as $exam)
-                    <div class="p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
+                    <div class="p-3 bg-emerald-50/50 border border-emerald-100 rounded-xl">
                         <div class="flex items-start justify-between">
                             <h4 class="text-xs font-medium text-gray-900">{{ $exam->nama_bank }}</h4>
                             @php
                                 $diff = now()->diffInHours($exam->jadwal_mulai);
                                 $timeText = $diff > 24 ? floor($diff/24) . ' hari' : $diff . ' jam';
                             @endphp
-                            <span class="text-[10px] font-medium text-blue-600">mulai dalam {{ $timeText }}</span>
+                            <span class="text-[10px] font-medium text-emerald-600">mulai dalam {{ $timeText }}</span>
                         </div>
                         <p class="text-[10px] text-gray-500 mt-1">{{ $exam->mataPelajaran->nama }}</p>
                         <div class="mt-3 flex items-center gap-2 text-[10px] text-gray-400">

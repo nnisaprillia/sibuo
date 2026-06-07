@@ -13,7 +13,7 @@
         @endif
     </div>
     @if($info)
-        <span class="inline-block mt-3 text-[10px] font-medium px-2 py-0.5 rounded bg-blue-50 text-blue-700">
+        <span class="inline-block mt-3 text-[10px] font-medium px-2 py-0.5 rounded bg-emerald-50 text-emerald-700">
             {{ $info }}
         </span>
     @endif

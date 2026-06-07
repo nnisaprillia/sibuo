@@ -2,7 +2,7 @@
 
 @section('breadcrumb')
     <div class="flex items-center gap-2 text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
-        <a href="{{ route('guru.bank-soal.index') }}" class="hover:text-blue-500 transition-colors">Bank Soal</a>
+        <a href="{{ route('guru.bank-soal.index') }}" class="hover:text-emerald-500 transition-colors">Bank Soal</a>
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         <span class="text-gray-900 font-bold">{{ $bankSoal->nama_bank }}</span>
     </div>
@@ -24,7 +24,7 @@
                     <div class="space-y-1">
                         <label for="mata_pelajaran_id" class="block text-xs font-medium text-gray-500">Mata Pelajaran</label>
                         <select name="mata_pelajaran_id" id="mata_pelajaran_id" required
-                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors">
+                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors">
                             @foreach($mataPelajarans as $mp)
                                 <option value="{{ $mp->id }}" {{ old('mata_pelajaran_id', $bankSoal->mata_pelajaran_id) == $mp->id ? 'selected' : '' }}>{{ $mp->nama }}</option>
                             @endforeach
@@ -37,7 +37,7 @@
                     <div class="space-y-1">
                         <label for="durasi" class="block text-xs font-medium text-gray-500">Durasi (Menit)</label>
                         <input type="number" name="durasi" id="durasi" value="{{ old('durasi', $bankSoal->durasi) }}" required min="1"
-                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors">
+                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors">
                         @error('durasi')
                             <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
                         @enderror
@@ -47,7 +47,7 @@
                 <div class="space-y-1">
                     <label for="nama_bank" class="block text-xs font-medium text-gray-500">Nama Ujian / Bank Soal</label>
                     <input type="text" name="nama_bank" id="nama_bank" value="{{ old('nama_bank', $bankSoal->nama_bank) }}" required
-                        class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors">
+                        class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors">
                     @error('nama_bank')
                         <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
                     @enderror
@@ -58,7 +58,7 @@
                         <label for="jadwal_mulai" class="block text-xs font-medium text-gray-500">Waktu Mulai</label>
                         <input type="datetime-local" name="jadwal_mulai" id="jadwal_mulai" 
                             value="{{ old('jadwal_mulai', $bankSoal->jadwal_mulai->format('Y-m-d\TH:i')) }}" required
-                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors">
+                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors">
                         @error('jadwal_mulai')
                             <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
                         @enderror
@@ -68,7 +68,7 @@
                         <label for="jadwal_selesai" class="block text-xs font-medium text-gray-500">Waktu Selesai</label>
                         <input type="datetime-local" name="jadwal_selesai" id="jadwal_selesai" 
                             value="{{ old('jadwal_selesai', $bankSoal->jadwal_selesai->format('Y-m-d\TH:i')) }}" required
-                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors">
+                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors">
                         @error('jadwal_selesai')
                             <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
                         @enderror
@@ -79,7 +79,7 @@
                     <a href="{{ route('guru.bank-soal.show', $bankSoal->id) }}" class="px-4 py-2 border border-gray-200 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
                         Batal
                     </a>
-                    <button type="submit" class="px-4 py-2 bg-[#0f2744] text-white text-xs font-medium rounded-lg hover:bg-[#1a3a5c] transition-colors shadow-lg shadow-blue-900/10">
+                    <button type="submit" class="px-4 py-2 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primary-dark transition-colors shadow-lg shadow-emerald-900/10">
                         Perbarui Data
                     </button>
                 </div>

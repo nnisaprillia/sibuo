@@ -35,7 +35,7 @@
         <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-medium text-gray-900">Penugasan Guru Terbaru</h3>
-                <a href="{{ route('admin.penugasan-guru.index') }}" class="text-[10px] text-blue-500 hover:text-blue-600 font-medium">Lihat semua →</a>
+                <a href="{{ route('admin.penugasan-guru.index') }}" class="text-[10px] text-emerald-500 hover:text-emerald-600 font-medium">Lihat semua →</a>
             </div>
             
             <div class="overflow-x-auto">
@@ -79,10 +79,10 @@
             <div class="space-y-4">
                 @php
                     $activities = [
-                        ['dot' => 'bg-blue-500', 'text' => 'Guru <b>Budi Santoso</b> membuat Bank Soal baru', 'time' => '2 menit yang lalu'],
+                        ['dot' => 'bg-emerald-500', 'text' => 'Guru <b>Budi Santoso</b> membuat Bank Soal baru', 'time' => '2 menit yang lalu'],
                         ['dot' => 'bg-green-500', 'text' => 'Siswa <b>Andi Wijaya</b> menyelesaikan ujian Matematika', 'time' => '15 menit yang lalu'],
                         ['dot' => 'bg-yellow-500', 'text' => 'Admin mengubah jadwal ujian Bahasa Inggris', 'time' => '1 jam yang lalu'],
-                        ['dot' => 'bg-blue-500', 'text' => 'Guru <b>Siti Aminah</b> menambahkan 20 soal baru', 'time' => '3 jam yang lalu'],
+                        ['dot' => 'bg-emerald-500', 'text' => 'Guru <b>Siti Aminah</b> menambahkan 20 soal baru', 'time' => '3 jam yang lalu'],
                         ['dot' => 'bg-red-500', 'text' => 'Pelanggaran terdeteksi pada sesi ujian <b>IPA Terpadu</b>', 'time' => '5 jam yang lalu'],
                     ];
                 @endphp

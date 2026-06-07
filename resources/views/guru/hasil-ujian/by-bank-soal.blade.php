@@ -2,15 +2,15 @@
 
 @section('breadcrumb')
     <div class="flex items-center gap-2 text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
-        <a href="{{ route('guru.bank-soal.index') }}" class="hover:text-blue-500 transition-colors">Bank Soal</a>
+        <a href="{{ route('guru.bank-soal.index') }}" class="hover:text-emerald-500 transition-colors">Bank Soal</a>
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         <span class="text-gray-900">Hasil Pengerjaan</span>
     </div>
 @endsection
 
 @section('content')
-    <div class="bg-[#0f2744] rounded-2xl p-6 mb-6 shadow-lg shadow-blue-900/10 text-white relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+    <div class="bg-primary rounded-2xl p-6 mb-6 shadow-lg shadow-emerald-900/10 text-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
         <div class="relative z-10">
             <h1 class="text-xl font-medium mb-4">{{ $bankSoal->nama_bank }}</h1>
             
@@ -25,10 +25,10 @@
                 </div>
                 <div>
                     <p class="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-1">Rata-rata Nilai</p>
-                    <p class="text-2xl font-bold text-blue-300">{{ round($averageScore ?? 0, 1) }}</p>
+                    <p class="text-2xl font-bold text-emerald-300">{{ round($averageScore ?? 0, 1) }}</p>
                 </div>
                 <div class="flex flex-col justify-end">
-                    <a href="{{ route('guru.bank-soal.statistik', $bankSoal->id) }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white text-xs font-bold rounded-lg hover:bg-blue-600 transition-all">
+                    <a href="{{ route('guru.bank-soal.statistik', $bankSoal->id) }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500 text-white text-xs font-bold rounded-lg hover:bg-emerald-600 transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         Lihat Statistik Soal
                     </a>
@@ -92,7 +92,7 @@
                                 {{ $ujian->created_at->format('d M Y, H:i') }}
                             </td>
                             <td class="px-5 py-3.5 text-right">
-                                <a href="{{ route('guru.hasil-ujian.show', $ujian->id) }}" class="px-3 py-1.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-lg hover:bg-blue-100 transition-colors">
+                                <a href="{{ route('guru.hasil-ujian.show', $ujian->id) }}" class="px-3 py-1.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-lg hover:bg-emerald-100 transition-colors">
                                     Detail
                                 </a>
                             </td>

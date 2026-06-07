@@ -2,9 +2,9 @@
 
 @section('breadcrumb')
     <div class="flex items-center gap-2 text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
-        <a href="{{ route('guru.bank-soal.index') }}" class="hover:text-blue-500 transition-colors">Bank Soal</a>
+        <a href="{{ route('guru.bank-soal.index') }}" class="hover:text-emerald-500 transition-colors">Bank Soal</a>
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-        <a href="{{ route('guru.bank-soal.show', $bankSoal->id) }}" class="hover:text-blue-500 transition-colors">Detail</a>
+        <a href="{{ route('guru.bank-soal.show', $bankSoal->id) }}" class="hover:text-emerald-500 transition-colors">Detail</a>
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         <span class="text-gray-900">Statistik</span>
     </div>
@@ -69,8 +69,8 @@
                                     <p class="text-[10px] text-gray-400">{{ optional($uj->siswa->kelas)->nama_kelas }}</p>
                                 </div>
                                 <div class="text-right shrink-0">
-                                    <p class="text-xs font-bold text-blue-600">{{ optional($uj->hasilUjian)->nilai ?? '-' }}</p>
-                                    <a href="{{ route('guru.hasil-ujian.show', $uj->id) }}" class="text-[8px] font-bold text-gray-400 hover:text-blue-500 uppercase">Detail</a>
+                                    <p class="text-xs font-bold text-emerald-600">{{ optional($uj->hasilUjian)->nilai ?? '-' }}</p>
+                                    <a href="{{ route('guru.hasil-ujian.show', $uj->id) }}" class="text-[8px] font-bold text-gray-400 hover:text-emerald-500 uppercase">Detail</a>
                                 </div>
                             </div>
                         @empty

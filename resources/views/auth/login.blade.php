@@ -19,7 +19,7 @@
         <div class="space-y-1">
             <label for="email" class="block text-xs font-medium text-gray-500">Email</label>
             <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
-                class="w-full h-10 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors @error('email') border-red-500 @enderror"
+                class="w-full h-10 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors @error('email') border-red-500 @enderror"
                 placeholder="nama@contoh.com">
             @error('email')
                 <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
@@ -31,14 +31,14 @@
             <div class="flex items-center justify-between">
                 <label for="password" class="block text-xs font-medium text-gray-500">Password</label>
                 @if (Route::has('password.request'))
-                    <a class="text-[10px] text-blue-500 hover:text-blue-600 font-medium" href="{{ route('password.request') }}">
+                    <a class="text-[10px] text-emerald-500 hover:text-emerald-600 font-medium" href="{{ route('password.request') }}">
                         Lupa password?
                     </a>
                 @endif
             </div>
             <div class="relative" x-data="{ show: false }">
                 <input id="password" :type="show ? 'text' : 'password'" name="password" required autocomplete="current-password"
-                    class="w-full h-10 px-3 pr-10 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors @error('password') border-red-500 @enderror"
+                    class="w-full h-10 px-3 pr-10 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors @error('password') border-red-500 @enderror"
                     placeholder="••••••••">
                 <button type="button" @click="show = !show" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                     <svg x-show="!show" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
@@ -52,11 +52,11 @@
 
         <!-- Remember Me -->
         <div class="flex items-center">
-            <input id="remember_me" type="checkbox" name="remember" class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 bg-gray-50">
+            <input id="remember_me" type="checkbox" name="remember" class="w-3.5 h-3.5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 bg-gray-50">
             <label for="remember_me" class="ml-2 text-[10px] text-gray-500">Tetap masuk di perangkat ini</label>
         </div>
 
-        <button type="submit" class="w-full h-10 bg-[#0f2744] text-white text-xs font-medium rounded-lg hover:bg-[#1a3a5c] transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-900/10">
+        <button type="submit" class="w-full h-10 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/10">
             Masuk Sekarang
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </button>

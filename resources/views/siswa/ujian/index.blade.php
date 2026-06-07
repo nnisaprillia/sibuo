@@ -5,7 +5,7 @@
         <div class="w-full max-w-xl">
             <!-- ExamHub Logo -->
             <div class="flex items-center justify-center gap-2 mb-8">
-                <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                     </svg>
@@ -37,7 +37,7 @@
                                             <p class="text-[10px] text-gray-500">{{ $upcoming->mataPelajaran->nama }}</p>
                                         </div>
                                         <div class="text-right">
-                                            <p class="text-[10px] font-medium text-blue-600">Besok, {{ $upcoming->jadwal_mulai->format('H:i') }}</p>
+                                            <p class="text-[10px] font-medium text-emerald-600">Besok, {{ $upcoming->jadwal_mulai->format('H:i') }}</p>
                                         </div>
                                     </div>
                                 @endforeach
@@ -92,14 +92,14 @@
                                     <div class="space-y-2">
                                         <div class="flex justify-center">
                                             <input type="text" name="kode_ujian" maxlength="7" required
-                                                class="w-full max-w-[240px] h-14 text-center text-2xl font-mono tracking-[0.5em] border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-all uppercase"
+                                                class="w-full max-w-[240px] h-14 text-center text-2xl font-mono tracking-[0.5em] border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-all uppercase"
                                                 placeholder="XXX-XXX"
                                                 x-mask="aaa-aaa">
                                         </div>
                                         <p class="text-[10px] text-center text-gray-400">Kode diperbarui setiap 5 menit oleh pengawas</p>
                                     </div>
 
-                                    <button type="submit" class="w-full h-12 bg-[#0f2744] text-white text-sm font-medium rounded-xl hover:bg-[#1a3a5c] transition-colors shadow-lg shadow-blue-900/10">
+                                    <button type="submit" class="w-full h-12 bg-primary text-white text-sm font-medium rounded-xl hover:bg-primary-dark transition-colors shadow-lg shadow-emerald-900/10">
                                         Mulai Ujian
                                     </button>
                                 </form>

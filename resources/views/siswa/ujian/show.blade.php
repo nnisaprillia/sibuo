@@ -3,9 +3,9 @@
 @section('content')
     @if ($ujian->status === 'ongoing')
         <!-- Topbar Ujian -->
-        <header class="h-14 bg-[#0f2744] flex items-center justify-between px-6 shrink-0 z-30">
+        <header class="h-14 bg-primary flex items-center justify-between px-6 shrink-0 z-30">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                     </svg>
@@ -19,7 +19,7 @@
             <div class="flex items-center gap-6">
                 <div class="flex flex-col items-end">
                     <p class="text-white/40 text-[10px] uppercase tracking-widest font-semibold">Sisa Waktu</p>
-                    <p id="timer" class="text-xl font-medium text-[#60A5FA] font-tabular leading-none mt-1">00:00:00</p>
+                    <p id="timer" class="text-xl font-medium text-[#34D399] font-tabular leading-none mt-1">00:00:00</p>
                 </div>
             </div>
         </header>
@@ -39,7 +39,7 @@
                         @foreach ($ujian->bankSoal->soal as $index => $soal)
                             <div class="question-item hidden" data-index="{{ $index }}" data-soal-id="{{ $soal->id }}">
                                 <div class="flex items-start gap-5 mb-8">
-                                    <div class="w-10 h-10 bg-[#0f2744] text-white rounded-full flex items-center justify-center font-medium shrink-0 shadow-lg shadow-blue-900/10">
+                                    <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-medium shrink-0 shadow-lg shadow-emerald-900/10">
                                         {{ $index + 1 }}
                                     </div>
                                     <div class="flex-1">
@@ -60,14 +60,14 @@
                                     @endphp
 
                                     @foreach ($options as $key => $option)
-                                        <label class="group relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-all active:scale-[0.99]">
+                                        <label class="group relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all active:scale-[0.99]">
                                             <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" 
                                                 class="hidden option-input" 
                                                 data-soal-id="{{ $soal->id }}" 
                                                 {{ (isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key) ? 'checked' : '' }}>
                                             
-                                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 group-hover:border-blue-500 transition-colors radio-circle">
-                                                <div class="w-3 h-3 bg-blue-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
+                                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 group-hover:border-emerald-500 transition-colors radio-circle">
+                                                <div class="w-3 h-3 bg-emerald-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
                                             </div>
                                             
                                             <div class="flex-1">
@@ -109,11 +109,11 @@
                                 <span class="text-[10px] text-gray-500">Belum dijawab</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 rounded-md bg-[#EFF6FF] border-2 border-blue-500"></div>
+                                <div class="w-3 h-3 rounded-md bg-[#ECFDF5] border-2 border-emerald-500"></div>
                                 <span class="text-[10px] text-gray-500">Sudah dijawab</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 rounded-md bg-[#0f2744] border-2 border-[#0f2744]"></div>
+                                <div class="w-3 h-3 rounded-md bg-primary border-2 border-primary"></div>
                                 <span class="text-[10px] text-gray-500">Sedang dikerjakan</span>
                             </div>
                             <div class="flex items-center gap-2">
@@ -126,7 +126,7 @@
                     <div class="p-4 bg-white border border-gray-200 rounded-xl">
                         <p class="text-[10px] text-gray-400 font-medium mb-2 uppercase tracking-wide">Progress Jawaban</p>
                         <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
-                            <div id="progress-bar" class="bg-blue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            <div id="progress-bar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
                         </div>
                         <p class="text-[10px] font-medium text-gray-600" id="progress-text">0/{{ $ujian->bankSoal->soal->count() }} soal dijawab</p>
                     </div>
@@ -144,7 +144,7 @@
                             NEXT
                         </button>
                     </div>
-                    <button type="button" id="finish-btn" class="w-full py-3 bg-[#0f2744] text-white text-[11px] font-bold rounded-xl hover:bg-[#1a3a5c] transition-colors shadow-lg shadow-blue-900/10">
+                    <button type="button" id="finish-btn" class="w-full py-3 bg-primary text-white text-[11px] font-bold rounded-xl hover:bg-primary-dark transition-colors shadow-lg shadow-emerald-900/10">
                         KUMPULKAN UJIAN
                     </button>
                 </div>
@@ -154,7 +154,7 @@
         <!-- Modals -->
         <x-confirm-modal id="submit-confirm" title="Kumpulkan Jawaban?" message="Pastikan semua soal telah dijawab dengan benar. Setelah dikumpulkan, Anda tidak dapat mengubah jawaban lagi." type="info">
             <x-slot name="footer">
-                <button type="button" id="confirm-submit-btn" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-[#0f2744] text-sm font-medium text-white hover:bg-[#1a3a5c] focus:outline-none sm:ml-3 sm:w-auto">
+                <button type="button" id="confirm-submit-btn" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-sm font-medium text-white hover:bg-primary-dark focus:outline-none sm:ml-3 sm:w-auto">
                     Ya, Kumpulkan
                 </button>
                 <button type="button" @click="$dispatch('close-submit-confirm')" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto">
@@ -217,7 +217,7 @@
                     Nilai dan detail jawaban akan tersedia setelah guru mengumumkan hasil pengerjaan.
                 </p>
 
-                <a href="{{ route('siswa.ujian.index') }}" class="mt-10 w-full h-12 bg-[#0f2744] text-white text-sm font-medium rounded-xl hover:bg-[#1a3a5c] transition-colors flex items-center justify-center shadow-lg shadow-blue-900/10">
+                <a href="{{ route('siswa.ujian.index') }}" class="mt-10 w-full h-12 bg-primary text-white text-sm font-medium rounded-xl hover:bg-primary-dark transition-colors flex items-center justify-center shadow-lg shadow-emerald-900/10">
                     Kembali ke Beranda
                 </a>
             </div>
@@ -268,11 +268,11 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.className = 'nav-btn w-full aspect-square rounded-lg border flex items-center justify-center text-xs font-medium transition-all ';
             
             if (isCurrent) {
-                btn.classList.add('bg-[#0f2744]', 'text-white', 'border-[#0f2744]', 'ring-2', 'ring-offset-1', 'ring-[#0f2744]');
+                btn.classList.add('bg-primary', 'text-white', 'border-primary', 'ring-2', 'ring-offset-1', 'ring-primary');
             } else if (isFlagged) {
                 btn.classList.add('bg-[#FFFBEB]', 'text-yellow-800', 'border-yellow-400');
             } else if (isAnswered) {
-                btn.classList.add('bg-[#EFF6FF]', 'text-blue-700', 'border-blue-500');
+                btn.classList.add('bg-[#ECFDF5]', 'text-emerald-700', 'border-emerald-500');
             } else {
                 btn.classList.add('bg-white', 'text-gray-500', 'border-gray-200', 'hover:border-gray-300');
             }
@@ -287,12 +287,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const dot = container.querySelector('.radio-dot');
             
             if (radio.checked) {
-                container.classList.add('border-blue-500', 'bg-[#EFF6FF]');
-                circle.classList.add('border-blue-500');
+                container.classList.add('border-emerald-500', 'bg-[#ECFDF5]');
+                circle.classList.add('border-emerald-500');
                 dot.classList.remove('opacity-0');
             } else {
-                container.classList.remove('border-blue-500', 'bg-[#EFF6FF]');
-                circle.classList.remove('border-blue-500');
+                container.classList.remove('border-emerald-500', 'bg-[#ECFDF5]');
+                circle.classList.remove('border-emerald-500');
                 dot.classList.add('opacity-0');
             }
         });
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
         timerEl.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         
         if (diff < 600000 && diff > 0) { // < 10 mins
-            timerEl.classList.remove('text-[#60A5FA]');
+            timerEl.classList.remove('text-[#34D399]');
             timerEl.classList.add('text-red-500', 'animate-pulse');
         }
         
