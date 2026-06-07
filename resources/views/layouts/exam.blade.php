@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'ExamHub') }}</title>
+    <title>{{ config('app.name', 'ExamHub') }} - Sesi Ujian</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -13,43 +13,34 @@
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    
     <style>
         [x-cloak] { display: none !important; }
         
+        /* Font tabular untuk timer agar angka tidak bergeser */
+        .font-tabular {
+            font-variant-numeric: tabular-nums;
+        }
+
         .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
+            width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
+            background: #f1f1f1;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
+            background: #cbd5e1;
             border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: #94a3b8;
         }
     </style>
     @stack('styles')
 </head>
-<body class="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden antialiased">
+<body class="bg-[#F9FAFB] font-sans antialiased text-gray-900 overflow-hidden h-screen flex flex-col">
     
-    @include('layouts.sidebar', ['active' => $active ?? ''])
-
-    <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <x-topbar :title="$title ?? 'Dashboard'">
-            @slot('breadcrumb')
-                @yield('breadcrumb')
-            @endslot
-        </x-topbar>
-
-        <main class="flex-1 overflow-y-auto p-5 md:p-6 custom-scrollbar">
-            <x-flash-message />
-            
-            @yield('content')
-        </main>
-    </div>
+    @yield('content')
 
     @stack('scripts')
 </body>

@@ -1,115 +1,80 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Edit Soal') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app', ['active' => 'bank-soal', 'title' => 'Edit Soal'])
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Edit Soal</h1>
-                    <p class="text-gray-600 dark:text-gray-400 mb-6">Bank Soal: {{ $bankSoal->nama_bank }}</p>
+@section('breadcrumb')
+    <div class="flex items-center gap-2 text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
+        <a href="{{ route('guru.bank-soal.show', $bankSoal->id) }}" class="hover:text-blue-500 transition-colors">Detail Bank Soal</a>
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        <span class="text-gray-900">Edit Soal</span>
+    </div>
+@endsection
 
-                    @if ($errors->any())
-                        <div class="mb-4 p-4 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded text-red-700 dark:text-red-200">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <form action="{{ route('guru.soal.update', [$bankSoal->id, $soal->id]) }}" method="POST" class="space-y-6">
-                        @csrf
-                        @method('PATCH')
-
-                        <div>
-                            <label for="pertanyaan" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Pertanyaan <span class="text-red-500">*</span>
-                            </label>
-                            <textarea id="pertanyaan" name="pertanyaan" required rows="4"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('pertanyaan') border-red-500 @enderror">{{ old('pertanyaan', $soal->pertanyaan) }}</textarea>
-                            @error('pertanyaan')
-                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="pilihan_a" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Pilihan A <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="pilihan_a" name="pilihan_a" value="{{ old('pilihan_a', $soal->pilihan_a) }}" required
-                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('pilihan_a') border-red-500 @enderror">
-                                @error('pilihan_a')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="pilihan_b" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Pilihan B <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="pilihan_b" name="pilihan_b" value="{{ old('pilihan_b', $soal->pilihan_b) }}" required
-                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('pilihan_b') border-red-500 @enderror">
-                                @error('pilihan_b')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="pilihan_c" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Pilihan C <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="pilihan_c" name="pilihan_c" value="{{ old('pilihan_c', $soal->pilihan_c) }}" required
-                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('pilihan_c') border-red-500 @enderror">
-                                @error('pilihan_c')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="pilihan_d" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Pilihan D <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="pilihan_d" name="pilihan_d" value="{{ old('pilihan_d', $soal->pilihan_d) }}" required
-                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('pilihan_d') border-red-500 @enderror">
-                                @error('pilihan_d')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="jawaban_benar" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Jawaban Benar <span class="text-red-500">*</span>
-                            </label>
-                            <select id="jawaban_benar" name="jawaban_benar" required
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('jawaban_benar') border-red-500 @enderror">
-                                <option value="a" {{ old('jawaban_benar', $soal->jawaban_benar) == 'a' ? 'selected' : '' }}>A</option>
-                                <option value="b" {{ old('jawaban_benar', $soal->jawaban_benar) == 'b' ? 'selected' : '' }}>B</option>
-                                <option value="c" {{ old('jawaban_benar', $soal->jawaban_benar) == 'c' ? 'selected' : '' }}>C</option>
-                                <option value="d" {{ old('jawaban_benar', $soal->jawaban_benar) == 'd' ? 'selected' : '' }}>D</option>
-                            </select>
-                            @error('jawaban_benar')
-                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="flex items-center gap-4">
-                            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-                                Perbarui Soal
-                            </button>
-                            <a href="{{ route('guru.bank-soal.show', $bankSoal->id) }}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                                Batal
-                            </a>
-                        </div>
-                    </form>
-                </div>
+@section('content')
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-gray-100 bg-gray-50/50">
+                <h3 class="text-sm font-medium text-gray-900">Edit Pertanyaan</h3>
+                <p class="text-[10px] text-gray-500 mt-0.5">Perbarui teks pertanyaan atau pilihan jawaban</p>
             </div>
+            
+            <form method="POST" action="{{ route('guru.soal.update', [$bankSoal->id, $soal->id]) }}" class="p-5 space-y-6">
+                @csrf
+                @method('PATCH')
+
+                <div class="space-y-1">
+                    <label for="pertanyaan" class="block text-xs font-medium text-gray-500">Teks Pertanyaan</label>
+                    <textarea name="pertanyaan" id="pertanyaan" rows="5" required
+                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors"
+                        placeholder="Tuliskan pertanyaan ujian di sini...">{{ old('pertanyaan', $soal->pertanyaan) }}</textarea>
+                    @error('pertanyaan')
+                        <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach(['a', 'b', 'c', 'd'] as $key)
+                        <div class="space-y-1">
+                            <label for="pilihan_{{ $key }}" class="block text-xs font-medium text-gray-500">Pilihan {{ strtoupper($key) }}</label>
+                            <div class="flex gap-2">
+                                <div class="w-9 h-9 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center text-xs font-bold text-gray-400 shrink-0">
+                                    {{ strtoupper($key) }}
+                                </div>
+                                <input type="text" name="pilihan_{{ $key }}" id="pilihan_{{ $key }}" value="{{ old('pilihan_'.$key, $soal->{'pilihan_'.$key}) }}" required
+                                    class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors"
+                                    placeholder="Masukkan jawaban...">
+                            </div>
+                            @error('pilihan_'.$key)
+                                <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="space-y-2 pt-4 border-t border-gray-100">
+                    <label class="block text-xs font-medium text-gray-500">Tentukan Jawaban Benar</label>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach(['a', 'b', 'c', 'd'] as $key)
+                            <label class="flex-1 min-w-[80px]">
+                                <input type="radio" name="jawaban_benar" value="{{ $key }}" class="hidden peer" required {{ old('jawaban_benar', $soal->jawaban_benar) == $key ? 'checked' : '' }}>
+                                <div class="cursor-pointer py-2 text-center text-xs font-bold border border-gray-200 rounded-lg bg-gray-50 text-gray-400 peer-checked:bg-green-50 peer-checked:border-green-500 peer-checked:text-green-700 hover:bg-gray-100 transition-all">
+                                    {{ strtoupper($key) }}
+                                </div>
+                            </label>
+                        @endforeach
+                    </div>
+                    @error('jawaban_benar')
+                        <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="pt-6 flex items-center justify-end gap-3 border-t border-gray-100">
+                    <a href="{{ route('guru.bank-soal.show', $bankSoal->id) }}" class="px-4 py-2 border border-gray-200 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        Batal
+                    </a>
+                    <button type="submit" class="px-4 py-2 bg-[#0f2744] text-white text-xs font-medium rounded-lg hover:bg-[#1a3a5c] transition-colors shadow-lg shadow-blue-900/10">
+                        Perbarui Pertanyaan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</x-app-layout>
+@endsection
