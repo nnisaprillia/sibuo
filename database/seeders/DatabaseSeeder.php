@@ -16,17 +16,12 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            MataPelajaranSeeder::class,
-            KelasSeeder::class,
             JurusanSeeder::class,
-        ]);
-
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'role' => 'admin', // Set as admin for testing
+            KelasSeeder::class,
+            MataPelajaranSeeder::class,
+            UserSeeder::class,
+            PenugasanGuruSeeder::class,
+            ExamSeeder::class,
         ]);
     }
 }
