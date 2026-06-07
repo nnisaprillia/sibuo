@@ -2,7 +2,7 @@
 
 @section('breadcrumb')
     <div class="flex items-center gap-2 text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
-        <a href="{{ route('admin.mata-pelajaran.index') }}" class="hover:text-blue-500 transition-colors">Mata Pelajaran</a>
+        <a href="{{ route('admin.mata-pelajaran.index') }}" class="hover:text-emerald-500 transition-colors">Mata Pelajaran</a>
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         <span class="text-gray-900 font-bold">{{ $mataPelajaran->nama }}</span>
     </div>
@@ -23,7 +23,7 @@
                 <div class="space-y-1">
                     <label for="nama" class="block text-xs font-medium text-gray-500">Nama Mata Pelajaran</label>
                     <input type="text" name="nama" id="nama" value="{{ old('nama', $mataPelajaran->nama) }}" required
-                        class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors"
+                        class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors"
                         placeholder="Contoh: Matematika Wajib">
                     @error('nama')
                         <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
@@ -33,7 +33,7 @@
                 <div class="space-y-1">
                     <label for="deskripsi" class="block text-xs font-medium text-gray-500">Deskripsi (Opsional)</label>
                     <textarea name="deskripsi" id="deskripsi" rows="3"
-                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:outline-none transition-colors"
+                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors"
                         placeholder="Berikan ringkasan singkat mengenai mata pelajaran ini...">{{ old('deskripsi', $mataPelajaran->deskripsi) }}</textarea>
                     @error('deskripsi')
                         <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
@@ -44,7 +44,7 @@
                     <a href="{{ route('admin.mata-pelajaran.index') }}" class="px-4 py-2 border border-gray-200 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
                         Batal
                     </a>
-                    <button type="submit" class="px-4 py-2 bg-[#0f2744] text-white text-xs font-medium rounded-lg hover:bg-[#1a3a5c] transition-colors shadow-lg shadow-blue-900/10">
+                    <button type="submit" class="px-4 py-2 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primary-dark transition-colors shadow-lg shadow-emerald-900/10">
                         Perbarui Data
                     </button>
                 </div>

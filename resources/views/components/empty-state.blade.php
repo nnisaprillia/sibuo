@@ -8,7 +8,7 @@
     </div>
     <p class="text-sm text-gray-400 font-medium">Belum ada data {{ $entity }}.</p>
     @if($route)
-        <a href="{{ $route }}" class="mt-2 inline-block text-xs text-blue-500 hover:text-blue-600 transition-colors">
+        <a href="{{ $route }}" class="mt-2 inline-block text-xs text-emerald-500 hover:text-emerald-600 transition-colors">
             + Tambah {{ $entity }} pertama
         </a>
     @endif

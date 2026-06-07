@@ -6,7 +6,7 @@
             <h2 class="text-xl font-medium text-gray-900">Daftar Siswa</h2>
             <p class="text-xs text-gray-500 mt-1">Kelola data peserta ujian dan pembagian kelas</p>
         </div>
-        <a href="{{ route('admin.siswa.create') }}" class="px-4 py-2 bg-[#0f2744] text-white text-xs font-medium rounded-lg hover:bg-[#1a3a5c] transition-colors flex items-center gap-2">
+        <a href="{{ route('admin.siswa.create') }}" class="px-4 py-2 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             Tambah Siswa
         </a>
@@ -28,7 +28,7 @@
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-medium">
+                                    <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-medium">
                                         {{ substr($siswa->name, 0, 1) }}
                                     </div>
                                     <span class="text-gray-900 font-medium">{{ $siswa->name }}</span>
@@ -43,7 +43,7 @@
                             <td class="px-5 py-3.5 text-gray-600">{{ $siswa->email }}</td>
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center justify-end gap-2">
-                                    <a href="{{ route('admin.siswa.edit', $siswa) }}" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
+                                    <a href="{{ route('admin.siswa.edit', $siswa) }}" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M16.242 19.172l3.536-3.536M11 5l3.536-3.536m0 0l3.536 3.536m-3.536-3.536v13.072"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                     </a>
                                     <form method="POST" action="{{ route('admin.siswa.destroy', $siswa) }}" class="inline">

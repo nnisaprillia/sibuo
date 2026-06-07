@@ -70,7 +70,7 @@
                                             ⚠️ {{ $pelanggaran }}
                                         </span>
                                     @endif
-                                    <a href="{{ route('guru.hasil-ujian.show', $hasil->ujian->id) }}" class="px-3 py-1.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-lg hover:bg-blue-100 transition-colors">
+                                    <a href="{{ route('guru.hasil-ujian.show', $hasil->ujian->id) }}" class="px-3 py-1.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-lg hover:bg-emerald-100 transition-colors">
                                         Lihat Detail
                                     </a>
                                 </div>

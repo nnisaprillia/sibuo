@@ -2,7 +2,7 @@
 
 @section('breadcrumb')
     <div class="flex items-center gap-2 text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
-        <a href="{{ route('guru.bank-soal.index') }}" class="hover:text-blue-500 transition-colors">Bank Soal</a>
+        <a href="{{ route('guru.bank-soal.index') }}" class="hover:text-emerald-500 transition-colors">Bank Soal</a>
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         <span class="text-gray-900">Detail & Pertanyaan</span>
     </div>
@@ -43,7 +43,7 @@
 
     <div class="flex items-center justify-between mb-4">
         <h2 class="text-base font-medium text-gray-900">Daftar Pertanyaan</h2>
-        <a href="{{ route('guru.soal.create', $bankSoal->id) }}" class="px-4 py-2 bg-[#0f2744] text-white text-xs font-medium rounded-lg hover:bg-[#1a3a5c] transition-colors flex items-center gap-2 shadow-lg shadow-blue-900/10">
+        <a href="{{ route('guru.soal.create', $bankSoal->id) }}" class="px-4 py-2 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2 shadow-lg shadow-emerald-900/10">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             Tambah Soal
         </a>
@@ -56,7 +56,7 @@
     @else
         <div class="space-y-4">
             @foreach ($soals as $index => $soal)
-                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:border-blue-300 transition-colors">
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:border-emerald-300 transition-colors">
                     <div class="p-5">
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex items-center gap-3">
@@ -66,7 +66,7 @@
                                 <x-badge type="primary">ID: #{{ $soal->id }}</x-badge>
                             </div>
                             <div class="flex gap-1">
-                                <a href="{{ route('guru.soal.edit', [$bankSoal->id, $soal->id]) }}" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Soal">
+                                <a href="{{ route('guru.soal.edit', [$bankSoal->id, $soal->id]) }}" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Edit Soal">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M16.242 19.172l3.536-3.536M11 5l3.536-3.536m0 0l3.536 3.536m-3.536-3.536v13.072"></path></svg>
                                 </a>
                                 <form action="{{ route('guru.soal.destroy', [$bankSoal->id, $soal->id]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus soal ini?')">

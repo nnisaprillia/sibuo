@@ -2,7 +2,7 @@
 
 @section('breadcrumb')
     <div class="flex items-center gap-2 text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
-        <a href="{{ route('guru.hasil-ujian.index') }}" class="hover:text-blue-500 transition-colors">Hasil Ujian</a>
+        <a href="{{ route('guru.hasil-ujian.index') }}" class="hover:text-emerald-500 transition-colors">Hasil Ujian</a>
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         <span class="text-gray-900">Detail Jawaban</span>
     </div>
@@ -12,7 +12,7 @@
     <div class="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl font-bold shrink-0">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl font-bold shrink-0">
                     {{ substr($ujian->siswa->name ?? 'S', 0, 1) }}
                 </div>
                 <div>
@@ -61,7 +61,7 @@
             </div>
         </div>
         <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center gap-4">
-            <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center shrink-0">
+            <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
             <div>
