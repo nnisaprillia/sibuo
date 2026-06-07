@@ -60,7 +60,7 @@
     <div class="w-7 h-7 bg-blue-500 rounded-lg flex items-center justify-center">
       <!-- Icon -->
     </div>
-    <span class="text-white text-sm font-medium">ExamHub</span>
+    <span class="text-white text-sm font-medium">SIBUO</span>
   </div>
  
   <!-- Nav items -->
@@ -387,7 +387,7 @@ Tampilkan info bank soal + tabel soal-soal yang sudah ada.
 - Panel navigasi soal di kanan (lebar fixed ~240px)
 ### Topbar Ujian
 ```
-[ExamHub logo kecil] [Nama Ujian — Kelas]    [🕐 Sisa waktu: 01:23:45]
+[SIBUO logo kecil] [Nama Ujian — Kelas]    [🕐 Sisa waktu: 01:23:45]
 ```
 - Timer menggunakan font tabular (angka tidak bergeser), warna `#60A5FA`
 - Ketika tersisa < 10 menit: warna timer berubah jadi merah dan berkedip pelan

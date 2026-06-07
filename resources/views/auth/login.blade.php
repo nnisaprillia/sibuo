@@ -3,7 +3,7 @@
 @section('content')
     <div class="mb-8">
         <h1 class="text-2xl font-medium text-gray-900">Masuk ke akun</h1>
-        <p class="text-xs text-gray-500 mt-1">Masukkan kredensial sesuai peran Anda</p>
+        <p class="text-xs text-gray-500 mt-1">Masukkan Email dan Password Anda</p>
     </div>
 
     @if (session('status'))
