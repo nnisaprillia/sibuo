@@ -42,38 +42,99 @@
                                     </div>
                                     <div class="flex-1">
                                         <div class="prose prose-sm max-w-none text-gray-800 leading-relaxed text-sm">
-                                            {!! nl2br(e($soal->pertanyaan)) !!}
+                                            {!! nl2br($soal->pertanyaan) !!}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-1 gap-3">
-                                    @php
-                                        $options = [
-                                            'a' => $soal->pilihan_a,
-                                            'b' => $soal->pilihan_b,
-                                            'c' => $soal->pilihan_c,
-                                            'd' => $soal->pilihan_d,
-                                        ];
-                                    @endphp
+                                    @if($soal->tipe === 'pg')
+                                        @php
+                                            $options = [
+                                                'a' => $soal->pilihan_a,
+                                                'b' => $soal->pilihan_b,
+                                                'c' => $soal->pilihan_c,
+                                                'd' => $soal->pilihan_d,
+                                                'e' => $soal->pilihan_e,
+                                            ];
+                                            $row1 = ['a', 'c', 'e'];
+                                            $row2 = ['b', 'd'];
+                                        @endphp
 
-                                    @foreach ($options as $key => $option)
-                                        <label class="group relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all active:scale-[0.99]">
-                                            <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" 
-                                                class="hidden option-input" 
-                                                data-soal-id="{{ $soal->id }}" 
-                                                {{ (isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key) ? 'checked' : '' }}>
-                                            
-                                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 group-hover:border-emerald-500 transition-colors radio-circle">
-                                                <div class="w-3 h-3 bg-emerald-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
+                                        <div class="space-y-3">
+                                            <!-- Row 1: A, C, E -->
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                @foreach ($row1 as $key)
+                                                    @if($options[$key])
+                                                        <label class="group relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all active:scale-[0.99]">
+                                                            <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" 
+                                                                class="hidden option-input" 
+                                                                data-soal-id="{{ $soal->id }}" 
+                                                                {{ (isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key) ? 'checked' : '' }}>
+                                                            
+                                                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 group-hover:border-emerald-500 transition-colors radio-circle">
+                                                                <div class="w-3 h-3 bg-emerald-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
+                                                            </div>
+                                                            
+                                                            <div class="flex-1">
+                                                                <span class="text-xs font-bold text-gray-400 mr-2">{{ strtoupper($key) }}.</span>
+                                                                <span class="text-sm text-gray-700">{{ $options[$key] }}</span>
+                                                            </div>
+                                                        </label>
+                                                    @endif
+                                                @endforeach
                                             </div>
-                                            
-                                            <div class="flex-1">
-                                                <span class="text-xs font-bold text-gray-400 mr-2">{{ strtoupper($key) }}.</span>
-                                                <span class="text-sm text-gray-700">{{ $option }}</span>
+                                            <!-- Row 2: B, D -->
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                @foreach ($row2 as $key)
+                                                    @if($options[$key])
+                                                        <label class="group relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all active:scale-[0.99]">
+                                                            <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" 
+                                                                class="hidden option-input" 
+                                                                data-soal-id="{{ $soal->id }}" 
+                                                                {{ (isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key) ? 'checked' : '' }}>
+                                                            
+                                                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 group-hover:border-emerald-500 transition-colors radio-circle">
+                                                                <div class="w-3 h-3 bg-emerald-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
+                                                            </div>
+                                                            
+                                                            <div class="flex-1">
+                                                                <span class="text-xs font-bold text-gray-400 mr-2">{{ strtoupper($key) }}.</span>
+                                                                <span class="text-sm text-gray-700">{{ $options[$key] }}</span>
+                                                            </div>
+                                                        </label>
+                                                    @endif
+                                                @endforeach
                                             </div>
-                                        </label>
-                                    @endforeach
+                                        </div>
+                                    @elseif($soal->tipe === 'tf')
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            @foreach(['a' => 'Benar', 'b' => 'Salah'] as $key => $label)
+                                                <label class="group relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all active:scale-[0.99]">
+                                                    <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" 
+                                                        class="hidden option-input" 
+                                                        data-soal-id="{{ $soal->id }}" 
+                                                        {{ (isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key) ? 'checked' : '' }}>
+                                                    
+                                                    <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 group-hover:border-emerald-500 transition-colors radio-circle">
+                                                        <div class="w-3 h-3 bg-emerald-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
+                                                    </div>
+                                                    
+                                                    <div class="flex-1">
+                                                        <span class="text-sm font-bold text-gray-700">{{ strtoupper($label) }}</span>
+                                                    </div>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    @elseif($soal->tipe === 'essay')
+                                        <div class="space-y-2">
+                                            <label class="block text-xs font-medium text-gray-500">Jawaban Anda:</label>
+                                            <textarea name="answers[{{ $soal->id }}]" rows="6" 
+                                                class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors essay-input"
+                                                data-soal-id="{{ $soal->id }}"
+                                                placeholder="Tuliskan jawaban essay Anda di sini...">{{ $answerMap[$soal->id] ?? '' }}</textarea>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -159,7 +220,7 @@
                 <button type="button" id="confirm-submit-btn" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-sm font-medium text-white hover:bg-primary-dark focus:outline-none sm:ml-3 sm:w-auto">
                     Ya, Kumpulkan
                 </button>
-                <button type="button" @click="$dispatch('close-submit-confirm')" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto">
+                <button type="button" @click="$dispatch('close-submit-confirm')" id="cancel-submit-btn" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto">
                     Batal
                 </button>
             </x-slot>
@@ -268,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateNavButtons() {
         navButtons.forEach((btn, i) => {
             const soalId = btn.dataset.soalId;
-            const isAnswered = answerMap[soalId] != null;
+            const isAnswered = (answerMap[soalId] != null && answerMap[soalId] !== '');
             const isFlagged = markedMap[soalId] == true;
             const isCurrent = i === currentIndex;
             
@@ -296,8 +357,9 @@ document.addEventListener('DOMContentLoaded', function() {
             flagBtn.className = 'px-4 py-2 bg-transparent border border-yellow-400 text-yellow-600 text-[10px] font-bold rounded-lg hover:bg-yellow-50 transition-colors';
         }
 
-        // Update current question radio UI
-        const radios = questionItems[currentIndex].querySelectorAll('.option-input');
+        // Update current question input UI
+        const currentQuestionItem = questionItems[currentIndex];
+        const radios = currentQuestionItem.querySelectorAll('.option-input');
         radios.forEach(radio => {
             const container = radio.closest('label');
             const circle = container.querySelector('.radio-circle');
@@ -315,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Update progress
-        const answeredCount = Object.values(answerMap).filter(v => v != null).length;
+        const answeredCount = Object.values(answerMap).filter(v => v != null && v !== '').length;
         progressBar.style.width = `${(answeredCount / totalSoal) * 100}%`;
         progressText.innerText = `${answeredCount}/${totalSoal} soal dijawab`;
     }
@@ -360,6 +422,22 @@ document.addEventListener('DOMContentLoaded', function() {
             answerMap[soalId] = val;
             saveToServer(soalId, val, markedMap[soalId] || false);
             updateNavButtons();
+        });
+    });
+
+    // Auto-Save Essay Answers
+    document.querySelectorAll('.essay-input').forEach(textarea => {
+        let timeout = null;
+        textarea.addEventListener('input', function() {
+            const soalId = this.dataset.soalId;
+            const val = this.value;
+            answerMap[soalId] = val;
+            
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                saveToServer(soalId, val, markedMap[soalId] || false);
+                updateNavButtons();
+            }, 1000);
         });
     });
 
@@ -417,6 +495,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('finish-btn').addEventListener('click', () => {
         const reviewSection = document.getElementById('submit-review-section');
+        const confirmBtn = document.getElementById('confirm-submit-btn');
+        const cancelBtn = document.getElementById('cancel-submit-btn');
+        const modalTitle = document.querySelector('#submit-confirm h3');
+        const modalMessage = document.querySelector('#submit-confirm .text-sm.text-gray-500');
+        
         reviewSection.innerHTML = '';
         
         const unflaggedUnanswered = [];
@@ -425,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         questionItems.forEach((item, i) => {
             const soalId = item.dataset.soalId;
-            const isAnswered = answerMap[soalId] != null;
+            const isAnswered = (answerMap[soalId] != null && answerMap[soalId] !== '');
             const isFlagged = markedMap[soalId] == true;
             const questionNumber = i + 1;
             
@@ -437,8 +520,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 flaggedUnanswered.push(questionNumber);
             }
         });
+
+        const hasIssues = unflaggedUnanswered.length > 0 || flaggedAnswered.length > 0 || flaggedUnanswered.length > 0;
         
-        if (unflaggedUnanswered.length > 0 || flaggedAnswered.length > 0 || flaggedUnanswered.length > 0) {
+        if (hasIssues) {
+            confirmBtn.classList.add('hidden');
+            cancelBtn.innerText = 'Lanjutkan Pengerjaan';
+            modalTitle.innerText = 'Ujian Belum Lengkap';
+            modalTitle.classList.add('text-red-600');
+            modalMessage.innerHTML = '<span class="text-red-500 font-medium">Anda belum bisa mengumpulkan ujian.</span> Masih terdapat soal yang perlu diperbaiki:';
+            
             let html = '<div class="mt-4 space-y-4">';
             
             const createGrid = (numbers, colorClass, label, icon) => {
@@ -452,14 +543,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="grid grid-cols-8 gap-2">`;
                 
                 numbers.forEach(num => {
-                    gridHtml += `<div class="aspect-square flex items-center justify-center rounded-lg border-2 ${colorClass.badgeBorder} ${colorClass.badgeBg} ${colorClass.badgeText} text-[10px] font-bold">${num}</div>`;
+                    gridHtml += `<button type="button" onclick="goToQuestion(${num-1})" class="aspect-square flex items-center justify-center rounded-lg border-2 ${colorClass.badgeBorder} ${colorClass.badgeBg} ${colorClass.badgeText} text-[10px] font-bold hover:scale-110 transition-transform">${num}</button>`;
                 });
                 
                 gridHtml += `</div></div>`;
                 return gridHtml;
             };
 
-            // Unanswered category (Reddish)
+            // Case 3: Completely Unanswered (Red)
             html += createGrid(unflaggedUnanswered, {
                 bg: 'bg-red-50/50',
                 border: 'border-red-100',
@@ -467,21 +558,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 badgeBg: 'bg-white',
                 badgeBorder: 'border-red-200',
                 badgeText: 'text-red-700'
-            }, 'Belum Dijawab', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>');
+            }, 'Belum Dijawab & Tidak Ragu', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>');
 
-            // Flagged categories (Yellowish)
-            const allFlagged = [...flaggedAnswered, ...flaggedUnanswered].sort((a, b) => a - b);
-            html += createGrid(allFlagged, {
+            // Case 2: Unanswered but Flagged (Yellow)
+            html += createGrid(flaggedUnanswered, {
                 bg: 'bg-amber-50/50',
                 border: 'border-amber-100',
                 text: 'text-amber-700',
                 badgeBg: 'bg-white',
                 badgeBorder: 'border-amber-200',
                 badgeText: 'text-amber-700'
-            }, 'Masih Ragu-Ragu', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-7h.01M9 16h.01"></path></svg>');
+            }, 'Belum Diisi & Ragu-Ragu', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-7h.01M9 16h.01"></path></svg>');
+
+            // Case 1: Answered but Flagged (Yellow-Green)
+            html += createGrid(flaggedAnswered, {
+                bg: 'bg-yellow-50/30',
+                border: 'border-yellow-200',
+                text: 'text-yellow-800',
+                badgeBg: 'bg-white',
+                badgeBorder: 'border-yellow-300',
+                badgeText: 'text-yellow-800'
+            }, 'Sudah Diisi tapi Ragu-Ragu', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>');
             
             html += '</div>';
             reviewSection.innerHTML = html;
+        } else {
+            confirmBtn.classList.remove('hidden');
+            cancelBtn.innerText = 'Batal';
+            modalTitle.innerText = 'Kumpulkan Jawaban?';
+            modalTitle.classList.remove('text-red-600');
+            modalMessage.innerText = 'Pastikan semua soal telah dijawab dengan benar. Setelah dikumpulkan, Anda tidak dapat mengubah jawaban lagi.';
         }
         
         window.dispatchEvent(new CustomEvent('confirm-submit-confirm'));

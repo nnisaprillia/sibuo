@@ -63,7 +63,12 @@
                                 <span class="w-7 h-7 bg-gray-100 text-gray-500 rounded-lg flex items-center justify-center text-xs font-bold">
                                     {{ $soals->firstItem() + $index }}
                                 </span>
-                                <x-badge type="primary">ID: #{{ $soal->id }}</x-badge>
+                                @php
+                                    $tipeLabels = ['pg' => 'Pilihan Ganda', 'tf' => 'Benar / Salah', 'essay' => 'Essay'];
+                                    $tipeColors = ['pg' => 'primary', 'tf' => 'info', 'essay' => 'success'];
+                                @endphp
+                                <x-badge :type="$tipeColors[$soal->tipe]">{{ $tipeLabels[$soal->tipe] }}</x-badge>
+                                <x-badge type="secondary">ID: #{{ $soal->id }}</x-badge>
                             </div>
                             <div class="flex gap-1">
                                 <a href="{{ route('guru.soal.edit', [$bankSoal->id, $soal->id]) }}" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Edit Soal">
@@ -79,25 +84,50 @@
                             </div>
                         </div>
 
-                        <div class="text-sm text-gray-800 leading-relaxed mb-6">
-                            {!! nl2br(e($soal->pertanyaan)) !!}
+                        <div class="prose prose-sm max-w-none text-sm text-gray-800 leading-relaxed mb-6">
+                            {!! nl2br($soal->pertanyaan) !!}
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-                            @foreach(['a', 'b', 'c', 'd'] as $key)
-                                <div class="flex items-start gap-3 p-3 rounded-lg border {{ $soal->jawaban_benar == $key ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-100' }}">
-                                    <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 {{ $soal->jawaban_benar == $key ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500' }}">
-                                        {{ strtoupper($key) }}
-                                    </span>
-                                    <span class="text-xs {{ $soal->jawaban_benar == $key ? 'text-green-900 font-medium' : 'text-gray-600' }}">
-                                        {{ $soal->{'pilihan_'.$key} }}
-                                    </span>
-                                    @if($soal->jawaban_benar == $key)
-                                        <svg class="w-4 h-4 text-green-600 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        @if($soal->tipe === 'pg')
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                                @foreach(['a', 'b', 'c', 'd', 'e'] as $key)
+                                    @if($soal->{'pilihan_'.$key})
+                                        <div class="flex items-start gap-3 p-3 rounded-lg border {{ $soal->jawaban_benar == $key ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-100' }}">
+                                            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 {{ $soal->jawaban_benar == $key ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500' }}">
+                                                {{ strtoupper($key) }}
+                                            </span>
+                                            <span class="text-xs {{ $soal->jawaban_benar == $key ? 'text-green-900 font-medium' : 'text-gray-600' }}">
+                                                {{ $soal->{'pilihan_'.$key} }}
+                                            </span>
+                                            @if($soal->jawaban_benar == $key)
+                                                <svg class="w-4 h-4 text-green-600 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            @endif
+                                        </div>
                                     @endif
-                                </div>
-                            @endforeach
-                        </div>
+                                @endforeach
+                            </div>
+                        @elseif($soal->tipe === 'tf')
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                                @foreach(['a' => 'Benar', 'b' => 'Salah'] as $key => $label)
+                                    <div class="flex items-start gap-3 p-3 rounded-lg border {{ $soal->jawaban_benar == $key ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-100' }}">
+                                        <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 {{ $soal->jawaban_benar == $key ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500' }}">
+                                            {{ $key === 'a' ? 'T' : 'F' }}
+                                        </span>
+                                        <span class="text-xs {{ $soal->jawaban_benar == $key ? 'text-green-900 font-medium' : 'text-gray-600' }}">
+                                            {{ $label }}
+                                        </span>
+                                        @if($soal->jawaban_benar == $key)
+                                            <svg class="w-4 h-4 text-green-600 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @elseif($soal->tipe === 'essay')
+                            <div class="p-4 bg-gray-50 border border-gray-100 rounded-xl mb-6">
+                                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-2">Siswa akan menjawab pada kolom teks</p>
+                                <div class="h-20 border-2 border-dashed border-gray-200 rounded-lg"></div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endforeach

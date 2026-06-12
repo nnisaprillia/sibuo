@@ -1,6 +1,7 @@
 @props(['id', 'title', 'message', 'type' => 'danger'])
 
-<div x-data="{ open: false }" 
+<div id="{{ $id }}" 
+     x-data="{ open: false }" 
      x-show="open" 
      @confirm-{{ $id }}.window="open = true"
      @close-{{ $id }}.window="open = false"

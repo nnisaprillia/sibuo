@@ -40,12 +40,14 @@ class SoalController extends Controller
         }
 
         $validated = $request->validate([
+            'tipe' => 'required|in:pg,essay,tf',
             'pertanyaan' => 'required|string',
-            'pilihan_a' => 'required|string',
-            'pilihan_b' => 'required|string',
-            'pilihan_c' => 'required|string',
-            'pilihan_d' => 'required|string',
-            'jawaban_benar' => 'required|in:a,b,c,d',
+            'pilihan_a' => 'required_if:tipe,pg|nullable|string',
+            'pilihan_b' => 'required_if:tipe,pg|nullable|string',
+            'pilihan_c' => 'required_if:tipe,pg|nullable|string',
+            'pilihan_d' => 'required_if:tipe,pg|nullable|string',
+            'pilihan_e' => 'nullable|string',
+            'jawaban_benar' => 'required|string',
         ]);
 
         $validated['bank_soal_id'] = $bankSoal->id;
@@ -95,12 +97,14 @@ class SoalController extends Controller
         }
 
         $validated = $request->validate([
+            'tipe' => 'required|in:pg,essay,tf',
             'pertanyaan' => 'required|string',
-            'pilihan_a' => 'required|string',
-            'pilihan_b' => 'required|string',
-            'pilihan_c' => 'required|string',
-            'pilihan_d' => 'required|string',
-            'jawaban_benar' => 'required|in:a,b,c,d',
+            'pilihan_a' => 'required_if:tipe,pg|nullable|string',
+            'pilihan_b' => 'required_if:tipe,pg|nullable|string',
+            'pilihan_c' => 'required_if:tipe,pg|nullable|string',
+            'pilihan_d' => 'required_if:tipe,pg|nullable|string',
+            'pilihan_e' => 'nullable|string',
+            'jawaban_benar' => 'required|string',
         ]);
 
         $soal->update($validated);
