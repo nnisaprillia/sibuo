@@ -194,4 +194,23 @@ class BankSoalController extends Controller
         return redirect()->route('guru.bank-soal.index')
             ->with('success', 'Bank Soal berhasil dihapus.');
     }
+
+    /**
+     * Toggle the published status of the Bank Soal.
+     */
+    public function togglePublish(BankSoal $bankSoal)
+    {
+        $guru = Auth::user();
+        
+        // Verify ownership
+        if ($bankSoal->guru_id !== $guru->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        $bankSoal->is_published = !$bankSoal->is_published;
+        $bankSoal->save();
+
+        $status = $bankSoal->is_published ? 'dipublish' : 'diarsipkan (unpublish)';
+        return back()->with('success', "Bank Soal berhasil {$status}.");
+    }
 }
