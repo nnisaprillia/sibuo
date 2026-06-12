@@ -1,16 +1,23 @@
 @props(['active' => ''])
 
-<aside class="w-44 bg-primary flex flex-col h-screen sticky top-0 z-20">
+<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
+       class="fixed inset-y-0 left-0 z-30 w-44 bg-primary flex flex-col transition-transform duration-300 transform lg:translate-x-0 lg:static lg:inset-0 sidebar-scrollbar overflow-y-auto" x-cloak>
     <!-- Brand -->
-    <div class="flex items-center gap-2 px-4 py-5 border-b border-white/10">
-        <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center overflow-hidden">
-            <img src="{{ asset('assets/img/logoSIBUO.png') }}" alt="SIBUO" class="w-5 h-5 object-contain">
+    <div class="flex items-center justify-between px-4 py-5 border-b border-white/10 shrink-0">
+        <div class="flex items-center gap-2">
+            <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+                <img src="{{ asset('assets/img/logoSIBUO.png') }}" alt="SIBUO" class="w-5 h-5 object-contain">
+            </div>
+            <span class="text-white text-sm font-medium uppercase tracking-tighter">SIBUO</span>
         </div>
-        <span class="text-white text-sm font-medium">SIBUO</span>
+        <!-- Close button (Mobile) -->
+        <button @click="sidebarOpen = false" class="lg:hidden text-white/50 hover:text-white transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
     </div>
 
     <!-- Nav items -->
-    <nav class="flex flex-col flex-1 py-3 overflow-y-auto custom-scrollbar">
+    <nav class="flex flex-col flex-1 py-3">
         <a href="{{ route('admin.dashboard') }}" 
            class="flex items-center gap-2 px-4 py-2 text-xs transition-colors {{ $active === 'dashboard' ? 'text-emerald-300 bg-emerald-500/20 border-r-2 border-emerald-400' : 'text-white/50 hover:text-white/80 hover:bg-white/5' }}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>

@@ -17,31 +17,9 @@
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
-    <style>
-        [x-cloak] { display: none !important; }
-        
-        /* Font tabular untuk timer agar angka tidak bergeser */
-        .font-tabular {
-            font-variant-numeric: tabular-nums;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-    </style>
     @stack('styles')
 </head>
-<body class="bg-[#F9FAFB] font-sans antialiased text-gray-900 overflow-hidden h-screen flex flex-col">
+<body class="bg-[#F9FAFB] font-sans antialiased text-gray-900 overflow-x-hidden h-screen flex flex-col pt-safe pb-safe">
     
     @yield('content')
 

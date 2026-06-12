@@ -9,7 +9,7 @@
     </div>
 
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto custom-scrollbar">
             <table class="w-full text-xs">
                 <thead>
                     <tr class="border-b border-gray-200 bg-gray-50/50">

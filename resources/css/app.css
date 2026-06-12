@@ -1,3 +1,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        overscroll-behavior-y: contain;
+    }
+
+    /* Custom Scrollbar Global */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #e2e8f0;
+        border-radius: 20px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #cbd5e1;
+    }
+
+    /* Primary Sidebar Scrollbar */
+    .sidebar-scrollbar::-webkit-scrollbar {
+        width: 3px;
+    }
+    
+    .sidebar-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .sidebar-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+    
+    .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+}
+
+@layer utilities {
+    /* Safe Area Insets for Mobile */
+    .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    .pt-safe {
+        padding-top: env(safe-area-inset-top);
+    }
+}
