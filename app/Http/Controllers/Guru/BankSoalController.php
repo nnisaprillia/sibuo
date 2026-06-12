@@ -21,7 +21,7 @@ class BankSoalController extends Controller
         
         // Get all bank soal created by this guru
         $bankSoals = BankSoal::where('guru_id', $guru->id)
-            ->with('mataPelajaran', 'soal')
+            ->with('mataPelajaran', 'kelas', 'soal')
             ->paginate(10);
 
         // Check if guru has any assignments
@@ -42,13 +42,19 @@ class BankSoalController extends Controller
             $query->where('guru_id', $guru->id);
         })->get();
 
+        // Get classes assigned to this guru
+        $kelases = \App\Models\Kelas::whereHas('penugasanGuru', function ($query) use ($guru) {
+            $query->where('guru_id', $guru->id);
+        })->get();
+
         $warningNoAssignment = false;
         if ($mataPelajarans->isEmpty()) {
             $mataPelajarans = MataPelajaran::all();
+            $kelases = \App\Models\Kelas::all();
             $warningNoAssignment = true;
         }
 
-        return view('guru.bank-soal.create', compact('mataPelajarans', 'warningNoAssignment'));
+        return view('guru.bank-soal.create', compact('mataPelajarans', 'kelases', 'warningNoAssignment'));
     }
 
     /**
@@ -60,19 +66,21 @@ class BankSoalController extends Controller
         
         $validated = $request->validate([
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
+            'kelas_id' => 'required|exists:kelas,id',
             'nama_bank' => 'required|string|max:255',
             'durasi' => 'required|integer|min:1|max:480',
             'jadwal_mulai' => 'required|date',
             'jadwal_selesai' => 'required|date|after:jadwal_mulai',
         ]);
 
-        // Verify that this guru is assigned to this mata pelajaran
+        // Verify that this guru is assigned to this mata pelajaran and class
         $assigned = PenugasanGuru::where('guru_id', $guru->id)
             ->where('mata_pelajaran_id', $validated['mata_pelajaran_id'])
+            ->where('kelas_id', $validated['kelas_id'])
             ->exists();
 
-        if (!$assigned) {
-            return back()->with('error', 'Anda tidak ditugaskan pada mata pelajaran ini.');
+        if (!$assigned && PenugasanGuru::where('guru_id', $guru->id)->exists()) {
+            return back()->with('error', 'Anda tidak ditugaskan pada mata pelajaran dan kelas ini.');
         }
 
         $validated['guru_id'] = $guru->id;
@@ -117,13 +125,19 @@ class BankSoalController extends Controller
             $query->where('guru_id', $guru->id);
         })->get();
 
+        // Get classes assigned to this guru
+        $kelases = \App\Models\Kelas::whereHas('penugasanGuru', function ($query) use ($guru) {
+            $query->where('guru_id', $guru->id);
+        })->get();
+
         $warningNoAssignment = false;
         if ($mataPelajarans->isEmpty()) {
             $mataPelajarans = MataPelajaran::all();
+            $kelases = \App\Models\Kelas::all();
             $warningNoAssignment = true;
         }
 
-        return view('guru.bank-soal.edit', compact('bankSoal', 'mataPelajarans', 'warningNoAssignment'));
+        return view('guru.bank-soal.edit', compact('bankSoal', 'mataPelajarans', 'kelases', 'warningNoAssignment'));
     }
 
     /**
@@ -140,19 +154,21 @@ class BankSoalController extends Controller
 
         $validated = $request->validate([
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
+            'kelas_id' => 'required|exists:kelas,id',
             'nama_bank' => 'required|string|max:255',
             'durasi' => 'required|integer|min:1|max:480',
             'jadwal_mulai' => 'required|date',
             'jadwal_selesai' => 'required|date|after:jadwal_mulai',
         ]);
 
-        // Verify that this guru is assigned to this mata pelajaran
+        // Verify that this guru is assigned to this mata pelajaran and class
         $assigned = PenugasanGuru::where('guru_id', $guru->id)
             ->where('mata_pelajaran_id', $validated['mata_pelajaran_id'])
+            ->where('kelas_id', $validated['kelas_id'])
             ->exists();
 
-        if (!$assigned) {
-            return back()->with('error', 'Anda tidak ditugaskan pada mata pelajaran ini.');
+        if (!$assigned && PenugasanGuru::where('guru_id', $guru->id)->exists()) {
+            return back()->with('error', 'Anda tidak ditugaskan pada mata pelajaran dan kelas ini.');
         }
 
         $bankSoal->update($validated);

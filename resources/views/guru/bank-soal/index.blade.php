@@ -38,7 +38,11 @@
                             <td class="px-5 py-3.5">
                                 <div class="flex flex-col">
                                     <span class="text-gray-900 font-medium">{{ $bank->nama_bank }}</span>
-                                    <span class="text-[10px] text-gray-400 uppercase tracking-tight">{{ $bank->mataPelajaran->nama }}</span>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-[10px] text-gray-400 uppercase tracking-tight">{{ $bank->mataPelajaran->nama }}</span>
+                                        <span class="text-[10px] text-gray-300">•</span>
+                                        <span class="text-[10px] text-emerald-500 font-medium">{{ $bank->kelas->nama_kelas ?? 'Semua' }}</span>
+                                    </div>
                                 </div>
                             </td>
                             <td class="px-5 py-3.5 text-center font-medium text-gray-700">{{ $bank->soal->count() }}</td>
