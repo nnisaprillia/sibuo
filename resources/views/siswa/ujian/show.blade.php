@@ -135,7 +135,7 @@
                         <button type="button" id="prev-btn" class="flex-1 px-4 py-2 border border-gray-200 text-gray-600 text-[10px] font-bold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-30">
                             PREV
                         </button>
-                        <button type="button" id="flag-btn" class="px-4 py-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-[10px] font-bold rounded-lg hover:bg-yellow-100 transition-colors">
+                        <button type="button" id="flag-btn" class="px-4 py-2 bg-transparent border border-yellow-400 text-yellow-600 text-[10px] font-bold rounded-lg hover:bg-yellow-50 transition-colors">
                             ⚑ RAGU
                         </button>
                         <button type="button" id="next-btn" class="flex-1 px-4 py-2 border border-gray-200 text-gray-600 text-[10px] font-bold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-30">
@@ -151,6 +151,10 @@
 
         <!-- Modals -->
         <x-confirm-modal id="submit-confirm" title="Kumpulkan Jawaban?" message="Pastikan semua soal telah dijawab dengan benar. Setelah dikumpulkan, Anda tidak dapat mengubah jawaban lagi." type="info">
+            <div class="mt-4 space-y-3" id="submit-review-section">
+                <!-- Will be populated by JS -->
+            </div>
+            
             <x-slot name="footer">
                 <button type="button" id="confirm-submit-btn" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-primary text-sm font-medium text-white hover:bg-primary-dark focus:outline-none sm:ml-3 sm:w-auto">
                     Ya, Kumpulkan
@@ -255,6 +259,12 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.disabled = index === totalSoal - 1;
     }
 
+    window.goToQuestion = function(index) {
+        showQuestion(index);
+        // Dispatch Alpine event to close the modal
+        window.dispatchEvent(new CustomEvent('close-submit-confirm'));
+    }
+
     function updateNavButtons() {
         navButtons.forEach((btn, i) => {
             const soalId = btn.dataset.soalId;
@@ -276,8 +286,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Update current question radio UI
+        // Update flag button state
         const currentSoalId = questionItems[currentIndex].dataset.soalId;
+        const isCurrentFlagged = markedMap[currentSoalId] == true;
+        
+        if (isCurrentFlagged) {
+            flagBtn.className = 'px-4 py-2 bg-yellow-400 border border-yellow-400 text-white text-[10px] font-bold rounded-lg hover:bg-yellow-500 transition-colors';
+        } else {
+            flagBtn.className = 'px-4 py-2 bg-transparent border border-yellow-400 text-yellow-600 text-[10px] font-bold rounded-lg hover:bg-yellow-50 transition-colors';
+        }
+
+        // Update current question radio UI
         const radios = questionItems[currentIndex].querySelectorAll('.option-input');
         radios.forEach(radio => {
             const container = radio.closest('label');
@@ -397,6 +416,74 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('popstate', () => history.pushState(null, null, location.href));
 
     document.getElementById('finish-btn').addEventListener('click', () => {
+        const reviewSection = document.getElementById('submit-review-section');
+        reviewSection.innerHTML = '';
+        
+        const unflaggedUnanswered = [];
+        const flaggedAnswered = [];
+        const flaggedUnanswered = [];
+        
+        questionItems.forEach((item, i) => {
+            const soalId = item.dataset.soalId;
+            const isAnswered = answerMap[soalId] != null;
+            const isFlagged = markedMap[soalId] == true;
+            const questionNumber = i + 1;
+            
+            if (!isAnswered && !isFlagged) {
+                unflaggedUnanswered.push(questionNumber);
+            } else if (isAnswered && isFlagged) {
+                flaggedAnswered.push(questionNumber);
+            } else if (!isAnswered && isFlagged) {
+                flaggedUnanswered.push(questionNumber);
+            }
+        });
+        
+        if (unflaggedUnanswered.length > 0 || flaggedAnswered.length > 0 || flaggedUnanswered.length > 0) {
+            let html = '<div class="mt-4 space-y-4">';
+            
+            const createGrid = (numbers, colorClass, label, icon) => {
+                if (numbers.length === 0) return '';
+                let gridHtml = `
+                    <div class="p-4 rounded-2xl border ${colorClass.border} ${colorClass.bg}">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="${colorClass.text}">${icon}</span>
+                            <h5 class="text-[11px] font-bold ${colorClass.text} uppercase tracking-wider">${label} (${numbers.length})</h5>
+                        </div>
+                        <div class="grid grid-cols-8 gap-2">`;
+                
+                numbers.forEach(num => {
+                    gridHtml += `<div class="aspect-square flex items-center justify-center rounded-lg border-2 ${colorClass.badgeBorder} ${colorClass.badgeBg} ${colorClass.badgeText} text-[10px] font-bold">${num}</div>`;
+                });
+                
+                gridHtml += `</div></div>`;
+                return gridHtml;
+            };
+
+            // Unanswered category (Reddish)
+            html += createGrid(unflaggedUnanswered, {
+                bg: 'bg-red-50/50',
+                border: 'border-red-100',
+                text: 'text-red-700',
+                badgeBg: 'bg-white',
+                badgeBorder: 'border-red-200',
+                badgeText: 'text-red-700'
+            }, 'Belum Dijawab', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>');
+
+            // Flagged categories (Yellowish)
+            const allFlagged = [...flaggedAnswered, ...flaggedUnanswered].sort((a, b) => a - b);
+            html += createGrid(allFlagged, {
+                bg: 'bg-amber-50/50',
+                border: 'border-amber-100',
+                text: 'text-amber-700',
+                badgeBg: 'bg-white',
+                badgeBorder: 'border-amber-200',
+                badgeText: 'text-amber-700'
+            }, 'Masih Ragu-Ragu', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-7h.01M9 16h.01"></path></svg>');
+            
+            html += '</div>';
+            reviewSection.innerHTML = html;
+        }
+        
         window.dispatchEvent(new CustomEvent('confirm-submit-confirm'));
     });
 
