@@ -21,6 +21,7 @@ class UjianController extends Controller
         $now = now();
 
         $availableBankSoal = BankSoal::with('mataPelajaran', 'guru')
+            ->where('is_published', true)
             ->where('jadwal_mulai', '<=', $now)
             ->where('jadwal_selesai', '>=', $now)
             ->whereExists(function ($query) use ($siswa) {
@@ -46,6 +47,7 @@ class UjianController extends Controller
 
         // upcoming bank soal for today and tomorrow
         $upcomingBankSoal = BankSoal::with('mataPelajaran', 'guru')
+            ->where('is_published', true)
             ->where('jadwal_mulai', '>', $now)
             ->whereExists(function ($query) use ($siswa) {
                 $query->select(DB::raw(1))

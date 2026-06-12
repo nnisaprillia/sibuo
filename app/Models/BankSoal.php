@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class BankSoal extends Model
 {
     protected $table = 'bank_soal';
-    protected $fillable = ['mata_pelajaran_id', 'kelas_id', 'guru_id', 'nama_bank', 'kode_ujian', 'kode_generated_at', 'durasi', 'jadwal_mulai', 'jadwal_selesai'];
+    protected $fillable = ['mata_pelajaran_id', 'kelas_id', 'guru_id', 'nama_bank', 'kode_ujian', 'kode_generated_at', 'durasi', 'jadwal_mulai', 'jadwal_selesai', 'is_published'];
     protected $casts = [
         'jadwal_mulai' => 'datetime',
         'jadwal_selesai' => 'datetime',
         'kode_generated_at' => 'datetime',
+        'is_published' => 'boolean',
     ];
 
     /**

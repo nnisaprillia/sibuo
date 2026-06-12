@@ -39,6 +39,7 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
     Route::get('/dashboard', \App\Http\Controllers\Guru\DashboardController::class . '@index')->name('dashboard');
     
     Route::resource('bank-soal', \App\Http\Controllers\Guru\BankSoalController::class);
+    Route::patch('bank-soal/{bankSoal}/toggle-publish', [\App\Http\Controllers\Guru\BankSoalController::class, 'togglePublish'])->name('bank-soal.toggle-publish');
     
     Route::prefix('bank-soal/{bankSoal}/soal')->name('soal.')->group(function () {
         Route::get('/create', \App\Http\Controllers\Guru\SoalController::class . '@create')->name('create');
