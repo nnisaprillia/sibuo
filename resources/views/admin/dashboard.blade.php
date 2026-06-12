@@ -52,7 +52,7 @@
                         @forelse(\App\Models\PenugasanGuru::with(['guru', 'mataPelajaran', 'kelas'])->latest()->take(5)->get() as $penugasan)
                             <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                                 <td class="py-3 text-gray-900 font-medium">{{ $penugasan->guru->name }}</td>
-                                <td class="py-3 text-gray-700">{{ $penugasan->mataPelajaran->nama_mapel }}</td>
+                                <td class="py-3 text-gray-700">{{ $penugasan->mataPelajaran->nama }}</td>
                                 <td class="py-3 text-gray-700">{{ $penugasan->kelas->nama_kelas }}</td>
                                 <td class="py-3 text-center">
                                     <x-badge type="success">Aktif</x-badge>

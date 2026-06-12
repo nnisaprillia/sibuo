@@ -15,7 +15,7 @@ class BankSoal extends Model
     ];
 
     /**
-     * Get the current exam code or regenerate if expired (5 minutes).
+     * Get the current exam code or regenerate if expired (1 minute).
      */
     public function getOrGenerateKodeUjian()
     {
@@ -26,8 +26,8 @@ class BankSoal extends Model
             return $this->kode_ujian;
         }
 
-        // If code doesn't exist or is older than 5 minutes, regenerate
-        if (!$this->kode_ujian || !$this->kode_generated_at || $this->kode_generated_at->diffInMinutes($now) >= 5) {
+        // If code doesn't exist or is older than 1 minute, regenerate
+        if (!$this->kode_ujian || !$this->kode_generated_at || $this->kode_generated_at->diffInMinutes($now) >= 1) {
             $this->kode_ujian = $this->generateNewKode();
             $this->kode_generated_at = $now;
             $this->save();

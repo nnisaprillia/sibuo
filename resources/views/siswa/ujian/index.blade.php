@@ -35,7 +35,15 @@
                                             <p class="text-[10px] text-gray-500">{{ $upcoming->mataPelajaran->nama }}</p>
                                         </div>
                                         <div class="text-right">
-                                            <p class="text-[10px] font-medium text-emerald-600">Besok, {{ $upcoming->jadwal_mulai->format('H:i') }}</p>
+                                            <p class="text-[10px] font-medium text-emerald-600">
+                                                @if($upcoming->jadwal_mulai->isToday())
+                                                    Hari ini, {{ $upcoming->jadwal_mulai->format('H:i') }}
+                                                @elseif($upcoming->jadwal_mulai->isTomorrow())
+                                                    Besok, {{ $upcoming->jadwal_mulai->format('H:i') }}
+                                                @else
+                                                    {{ $upcoming->jadwal_mulai->format('d M, H:i') }}
+                                                @endif
+                                            </p>
                                         </div>
                                     </div>
                                 @endforeach
@@ -87,9 +95,10 @@
                                     @csrf
                                     <input type="hidden" name="bank_soal_id" value="{{ $bank->id }}">
                                     
-                                    <div class="space-y-2">
+                                    <div class="space-y-2" x-data="{ kode: '' }">
                                         <div class="flex justify-center">
                                             <input type="text" name="kode_ujian" maxlength="7" required
+                                                x-model="kode"
                                                 class="w-full max-w-[240px] h-14 text-center text-2xl font-mono tracking-[0.5em] border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-all uppercase"
                                                 placeholder="XXX-XXX"
                                                 x-mask="aaa-aaa">

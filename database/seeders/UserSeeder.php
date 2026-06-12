@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
     {
         // Admin
         User::updateOrCreate(
-            ['email' => 'admin@sibuo.test'],
+            ['email' => 'admin@sibuo.com'],
             [
                 'name' => 'Administrator SIBUO',
                 'password' => Hash::make('password'),
@@ -24,10 +24,10 @@ class UserSeeder extends Seeder
 
         // Guru
         $gurus = [
-            ['name' => 'Budi Santoso, S.Pd', 'email' => 'budi@guru.test'],
-            ['name' => 'Siti Aminah, M.Pd', 'email' => 'siti@guru.test'],
-            ['name' => 'Agus Hermawan, S.Kom', 'email' => 'agus@guru.test'],
-            ['name' => 'Lani Wijaya, S.Si', 'email' => 'lani@guru.test'],
+            ['name' => 'Budi Santoso, S.Pd', 'email' => 'budi@guru.com'],
+            ['name' => 'Siti Aminah, M.Pd', 'email' => 'siti@guru.com'],
+            ['name' => 'Agus Hermawan, S.Kom', 'email' => 'agus@guru.com'],
+            ['name' => 'Lani Wijaya, S.Si', 'email' => 'lani@guru.com'],
         ];
 
         foreach ($gurus as $g) {
@@ -51,7 +51,7 @@ class UserSeeder extends Seeder
             for ($i = 1; $i <= 5; $i++) {
                 $nama_kelas_clean = str_replace(' ', '', strtolower($k->nama_kelas));
                 User::updateOrCreate(
-                    ['email' => "siswa{$i}.{$nama_kelas_clean}@siswa.test"],
+                    ['email' => "siswa{$i}.{$nama_kelas_clean}@siswa.com"],
                     [
                         'name' => "Siswa $i " . $k->nama_kelas,
                         'password' => Hash::make('password'),

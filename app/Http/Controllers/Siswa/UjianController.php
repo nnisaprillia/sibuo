@@ -26,7 +26,6 @@ class UjianController extends Controller
             ->whereExists(function ($query) use ($siswa) {
                 $query->select(DB::raw(1))
                     ->from('penugasan_guru')
-                    ->whereColumn('penugasan_guru.guru_id', 'bank_soal.guru_id')
                     ->whereColumn('penugasan_guru.mata_pelajaran_id', 'bank_soal.mata_pelajaran_id');
 
                 if ($siswa->kelas_id) {
@@ -46,11 +45,18 @@ class UjianController extends Controller
             ->paginate(15);
 
         // upcoming bank soal for today and tomorrow
-        $todayStart = now()->copy()->startOfDay();
-        $tomorrowEnd = now()->copy()->addDay()->endOfDay();
-
         $upcomingBankSoal = BankSoal::with('mataPelajaran', 'guru')
-            ->whereBetween('jadwal_mulai', [$todayStart, $tomorrowEnd])
+            ->where('jadwal_mulai', '>', $now)
+            ->whereExists(function ($query) use ($siswa) {
+                $query->select(DB::raw(1))
+                    ->from('penugasan_guru')
+                    ->whereColumn('penugasan_guru.mata_pelajaran_id', 'bank_soal.mata_pelajaran_id');
+
+                if ($siswa->kelas_id) {
+                    $query->where('penugasan_guru.kelas_id', $siswa->kelas_id);
+                }
+            })
+            ->orderBy('jadwal_mulai', 'asc')
             ->get();
 
         return view('siswa.ujian.index', compact('availableBankSoal', 'examMap', 'history', 'upcomingBankSoal'));

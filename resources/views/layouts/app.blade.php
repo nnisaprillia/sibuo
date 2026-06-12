@@ -51,6 +51,7 @@
             <x-flash-message />
             
             @yield('content')
+            {{ $slot ?? '' }}
         </main>
     </div>
 
