@@ -1,13 +1,20 @@
 @props(['active' => ''])
 
-<aside class="w-48 bg-primary flex flex-col h-screen sticky top-0 z-20">
+<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
+       class="fixed inset-y-0 left-0 z-30 w-48 bg-primary flex flex-col transition-transform duration-300 transform lg:translate-x-0 lg:static lg:inset-0 sidebar-scrollbar overflow-y-auto" x-cloak>
     <!-- Brand -->
-    <div class="px-4 py-5 border-b border-white/10">
-        <div class="flex items-center gap-2 mb-3">
-            <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center overflow-hidden">
-                <img src="{{ asset('assets/img/logoSIBUO.png') }}" alt="SIBUO" class="w-5 h-5 object-contain">
+    <div class="px-4 py-5 border-b border-white/10 shrink-0">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+                    <img src="{{ asset('assets/img/logoSIBUO.png') }}" alt="SIBUO" class="w-5 h-5 object-contain">
+                </div>
+                <span class="text-white text-sm font-medium">SIBUO</span>
             </div>
-            <span class="text-white text-sm font-medium">SIBUO</span>
+            <!-- Close button (Mobile) -->
+            <button @click="sidebarOpen = false" class="lg:hidden text-white/50 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
         
         <div class="mt-2">

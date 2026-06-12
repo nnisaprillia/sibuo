@@ -42,7 +42,7 @@
                 @endif
             </div>
             
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full text-xs">
                     <thead>
                         <tr class="border-b border-gray-200">

@@ -2,212 +2,205 @@
 
 @section('content')
     @if ($ujian->status === 'ongoing')
-        <!-- Topbar Ujian -->
-        <header class="h-14 bg-primary flex items-center justify-between px-6 shrink-0 z-30">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center overflow-hidden">
-                    <img src="{{ asset('assets/img/logoSIBUO.png') }}" alt="SIBUO" class="w-6 h-6 object-contain">
-                </div>
-                <div>
-                    <h1 class="text-white text-sm font-medium leading-tight">{{ $ujian->bankSoal->nama_bank }}</h1>
-                    <p class="text-white/40 text-[10px] uppercase tracking-wider">{{ Auth::user()->name }} • Kelas {{ Auth::user()->kelas->nama_kelas ?? '-' }}</p>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-6">
-                <div class="flex flex-col items-end">
-                    <p class="text-white/40 text-[10px] uppercase tracking-widest font-semibold">Sisa Waktu</p>
-                    <p id="timer" class="text-xl font-medium text-[#34D399] font-tabular leading-none mt-1">00:00:00</p>
-                </div>
-            </div>
-        </header>
-
-        <!-- Security Bar -->
-        <div class="bg-[#FEF3C7] border-b border-yellow-200 px-6 py-2 flex items-center gap-2 z-20 shrink-0">
-            <svg class="w-4 h-4 text-[#92400E]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v3m0-3h3m-3 0H9m12-3a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-            <p class="text-[11px] text-[#92400E] font-medium">Sesi ujian aktif — jangan berpindah tab atau halaman. Pelanggaran dicatat otomatis.</p>
-        </div>
-
-        <div class="flex-1 flex overflow-hidden">
-            <!-- Main Content: Soal -->
-            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-white">
-                <form id="exam-form" action="{{ route('siswa.ujian.submit', $ujian) }}" method="POST">
-                    @csrf
-                    <div id="questions-container">
-                        @foreach ($ujian->bankSoal->soal as $index => $soal)
-                            <div class="question-item hidden" data-index="{{ $index }}" data-soal-id="{{ $soal->id }}">
-                                <div class="flex items-start gap-5 mb-8">
-                                    <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-medium shrink-0 shadow-lg shadow-emerald-900/10">
-                                        {{ $index + 1 }}
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="prose prose-sm max-w-none text-gray-800 leading-relaxed text-sm">
-                                            {!! nl2br($soal->pertanyaan) !!}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 gap-3">
-                                    @if($soal->tipe === 'pg')
-                                        @php
-                                            $options = [
-                                                'a' => $soal->pilihan_a,
-                                                'b' => $soal->pilihan_b,
-                                                'c' => $soal->pilihan_c,
-                                                'd' => $soal->pilihan_d,
-                                                'e' => $soal->pilihan_e,
-                                            ];
-                                            $row1 = ['a', 'c', 'e'];
-                                            $row2 = ['b', 'd'];
-                                        @endphp
-
-                                        <div class="space-y-3">
-                                            <!-- Row 1: A, C, E -->
-                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                                @foreach ($row1 as $key)
-                                                    @if($options[$key])
-                                                        <label class="group relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all active:scale-[0.99]">
-                                                            <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" 
-                                                                class="hidden option-input" 
-                                                                data-soal-id="{{ $soal->id }}" 
-                                                                {{ (isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key) ? 'checked' : '' }}>
-                                                            
-                                                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 group-hover:border-emerald-500 transition-colors radio-circle">
-                                                                <div class="w-3 h-3 bg-emerald-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
-                                                            </div>
-                                                            
-                                                            <div class="flex-1">
-                                                                <span class="text-xs font-bold text-gray-400 mr-2">{{ strtoupper($key) }}.</span>
-                                                                <span class="text-sm text-gray-700">{{ $options[$key] }}</span>
-                                                            </div>
-                                                        </label>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                            <!-- Row 2: B, D -->
-                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                                @foreach ($row2 as $key)
-                                                    @if($options[$key])
-                                                        <label class="group relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all active:scale-[0.99]">
-                                                            <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" 
-                                                                class="hidden option-input" 
-                                                                data-soal-id="{{ $soal->id }}" 
-                                                                {{ (isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key) ? 'checked' : '' }}>
-                                                            
-                                                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 group-hover:border-emerald-500 transition-colors radio-circle">
-                                                                <div class="w-3 h-3 bg-emerald-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
-                                                            </div>
-                                                            
-                                                            <div class="flex-1">
-                                                                <span class="text-xs font-bold text-gray-400 mr-2">{{ strtoupper($key) }}.</span>
-                                                                <span class="text-sm text-gray-700">{{ $options[$key] }}</span>
-                                                            </div>
-                                                        </label>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @elseif($soal->tipe === 'tf')
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            @foreach(['a' => 'Benar', 'b' => 'Salah'] as $key => $label)
-                                                <label class="group relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all active:scale-[0.99]">
-                                                    <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" 
-                                                        class="hidden option-input" 
-                                                        data-soal-id="{{ $soal->id }}" 
-                                                        {{ (isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key) ? 'checked' : '' }}>
-                                                    
-                                                    <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 group-hover:border-emerald-500 transition-colors radio-circle">
-                                                        <div class="w-3 h-3 bg-emerald-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
-                                                    </div>
-                                                    
-                                                    <div class="flex-1">
-                                                        <span class="text-sm font-bold text-gray-700">{{ strtoupper($label) }}</span>
-                                                    </div>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    @elseif($soal->tipe === 'essay')
-                                        <div class="space-y-2">
-                                            <label class="block text-xs font-medium text-gray-500">Jawaban Anda:</label>
-                                            <textarea name="answers[{{ $soal->id }}]" rows="6" 
-                                                class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors essay-input"
-                                                data-soal-id="{{ $soal->id }}"
-                                                placeholder="Tuliskan jawaban essay Anda di sini...">{{ $answerMap[$soal->id] ?? '' }}</textarea>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
+        <div x-data="{ navOpen: false }" class="flex flex-col h-screen overflow-hidden">
+            <!-- Topbar Ujian -->
+            <header class="h-14 bg-primary flex items-center justify-between px-4 lg:px-6 shrink-0 z-30">
+                <div class="flex items-center gap-2 lg:gap-3">
+                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                        <img src="{{ asset('assets/img/logoSIBUO.png') }}" alt="SIBUO" class="w-6 h-6 object-contain">
                     </div>
-                </form>
-            </main>
-
-            <!-- Sidebar: Navigasi Soal -->
-            <aside class="w-72 bg-gray-50 border-l border-gray-200 flex flex-col shrink-0 overflow-hidden">
-                <div class="p-5 border-b border-gray-200 bg-white">
-                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Navigasi Soal</h3>
-                    
-                    <div class="grid grid-cols-5 gap-2" id="navigator-grid">
-                        @foreach ($ujian->bankSoal->soal as $index => $soal)
-                            <button type="button" 
-                                class="nav-btn w-full aspect-square rounded-lg border flex items-center justify-center text-xs font-medium transition-all"
-                                data-index="{{ $index }}"
-                                data-soal-id="{{ $soal->id }}">
-                                {{ $index + 1 }}
-                            </button>
-                        @endforeach
+                    <div class="min-w-0">
+                        <h1 class="text-white text-xs lg:text-sm font-medium leading-tight truncate max-w-[120px] lg:max-w-none">{{ $ujian->bankSoal->nama_bank }}</h1>
+                        <p class="text-white/40 text-[9px] lg:text-[10px] uppercase tracking-wider truncate">{{ Auth::user()->name }}</p>
                     </div>
                 </div>
-
-                <div class="p-5 flex-1 overflow-y-auto custom-scrollbar">
-                    <div class="space-y-4 mb-8">
-                        <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Keterangan</h4>
-                        <div class="space-y-2.5">
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 rounded-md border-2 border-gray-200"></div>
-                                <span class="text-[10px] text-gray-500">Belum dijawab</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 rounded-md bg-[#ECFDF5] border-2 border-emerald-500"></div>
-                                <span class="text-[10px] text-gray-500">Sudah dijawab</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 rounded-md bg-primary border-2 border-primary"></div>
-                                <span class="text-[10px] text-gray-500">Sedang dikerjakan</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 rounded-md bg-[#FFFBEB] border-2 border-yellow-400"></div>
-                                <span class="text-[10px] text-gray-500">Ditandai ragu</span>
-                            </div>
-                        </div>
+                
+                <div class="flex items-center gap-4 lg:gap-6">
+                    <div class="flex flex-col items-end">
+                        <p class="text-white/40 text-[9px] lg:text-[10px] uppercase tracking-widest font-semibold leading-none">Sisa Waktu</p>
+                        <p id="timer" class="text-lg lg:text-xl font-medium text-[#34D399] font-tabular leading-none mt-1">00:00:00</p>
                     </div>
-
-                    <div class="p-4 bg-white border border-gray-200 rounded-xl">
-                        <p class="text-[10px] text-gray-400 font-medium mb-2 uppercase tracking-wide">Progress Jawaban</p>
-                        <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
-                            <div id="progress-bar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                        <p class="text-[10px] font-medium text-gray-600" id="progress-text">0/{{ $ujian->bankSoal->soal->count() }} soal dijawab</p>
-                    </div>
-                </div>
-
-                <div class="p-5 border-t border-gray-200 bg-white space-y-3">
-                    <div class="flex items-center justify-between gap-2">
-                        <button type="button" id="prev-btn" class="flex-1 px-4 py-2 border border-gray-200 text-gray-600 text-[10px] font-bold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-30">
-                            PREV
-                        </button>
-                        <button type="button" id="flag-btn" class="px-4 py-2 bg-transparent border border-yellow-400 text-yellow-600 text-[10px] font-bold rounded-lg hover:bg-yellow-50 transition-colors">
-                            ⚑ RAGU
-                        </button>
-                        <button type="button" id="next-btn" class="flex-1 px-4 py-2 border border-gray-200 text-gray-600 text-[10px] font-bold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-30">
-                            NEXT
-                        </button>
-                    </div>
-                    <button type="button" id="finish-btn" class="w-full py-3 bg-primary text-white text-[11px] font-bold rounded-xl hover:bg-primary-dark transition-colors shadow-lg shadow-emerald-900/10">
-                        KUMPULKAN UJIAN
+                    <!-- Toggle Nav Mobile -->
+                    <button @click="navOpen = true" class="lg:hidden p-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"></path></svg>
                     </button>
                 </div>
-            </aside>
+            </header>
+
+            <!-- Security Bar -->
+            <div class="bg-[#FEF3C7] border-b border-yellow-200 px-4 lg:px-6 py-2 flex items-center gap-2 z-20 shrink-0">
+                <svg class="w-4 h-4 text-[#92400E] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v3m0-3h3m-3 0H9m12-3a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                <p class="text-[10px] text-[#92400E] font-medium leading-tight">Sesi ujian aktif — jangan berpindah tab atau halaman. Pelanggaran dicatat otomatis.</p>
+            </div>
+
+            <div class="flex-1 flex overflow-hidden relative">
+                <!-- Main Content: Soal -->
+                <main class="flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar bg-white">
+                    <form id="exam-form" action="{{ route('siswa.ujian.submit', $ujian) }}" method="POST">
+                        @csrf
+                        <div id="questions-container">
+                            @foreach ($ujian->bankSoal->soal as $index => $soal)
+                                <div class="question-item hidden" data-index="{{ $index }}" data-soal-id="{{ $soal->id }}">
+                                    <div class="flex items-start gap-3 lg:gap-5 mb-6 lg:mb-8">
+                                        <div class="w-8 h-8 lg:w-10 lg:h-10 bg-primary text-white rounded-full flex items-center justify-center font-medium shrink-0 shadow-lg shadow-emerald-900/10 text-sm lg:text-base">
+                                            {{ $index + 1 }}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="prose prose-sm max-w-none text-gray-800 leading-relaxed text-sm lg:text-base">
+                                                {!! nl2br($soal->pertanyaan) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 gap-3">
+                                        @if($soal->tipe === 'pg')
+                                            @php
+                                                $options = [
+                                                    'a' => $soal->pilihan_a,
+                                                    'b' => $soal->pilihan_b,
+                                                    'c' => $soal->pilihan_c,
+                                                    'd' => $soal->pilihan_d,
+                                                    'e' => $soal->pilihan_e,
+                                                ];
+                                            @endphp
+
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                @foreach (['a', 'b', 'c', 'd', 'e'] as $key)
+                                                    @if($options[$key])
+                                                        <label class="group relative flex items-center p-3 lg:p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all active:scale-[0.99]">
+                                                            <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" 
+                                                                class="hidden option-input" 
+                                                                data-soal-id="{{ $soal->id }}" 
+                                                                {{ (isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key) ? 'checked' : '' }}>
+                                                            
+                                                            <div class="w-5 h-5 lg:w-6 lg:h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-3 lg:mr-4 group-hover:border-emerald-500 transition-colors radio-circle shrink-0">
+                                                                <div class="w-2.5 h-2.5 lg:w-3 lg:h-3 bg-emerald-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
+                                                            </div>
+                                                            
+                                                            <div class="flex-1">
+                                                                <span class="text-[10px] lg:text-xs font-bold text-gray-400 mr-1 lg:mr-2">{{ strtoupper($key) }}.</span>
+                                                                <span class="text-xs lg:text-sm text-gray-700">{{ $options[$key] }}</span>
+                                                            </div>
+                                                        </label>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @elseif($soal->tipe === 'tf')
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                @foreach(['a' => 'Benar', 'b' => 'Salah'] as $key => $label)
+                                                    <label class="group relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all active:scale-[0.99]">
+                                                        <input type="radio" name="answers[{{ $soal->id }}]" value="{{ $key }}" 
+                                                            class="hidden option-input" 
+                                                            data-soal-id="{{ $soal->id }}" 
+                                                            {{ (isset($answerMap[$soal->id]) && $answerMap[$soal->id] === $key) ? 'checked' : '' }}>
+                                                        
+                                                        <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 group-hover:border-emerald-500 transition-colors radio-circle shrink-0">
+                                                            <div class="w-3 h-3 bg-emerald-600 rounded-full opacity-0 radio-dot transition-opacity"></div>
+                                                        </div>
+                                                        
+                                                        <div class="flex-1">
+                                                            <span class="text-sm font-bold text-gray-700">{{ strtoupper($label) }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        @elseif($soal->tipe === 'essay')
+                                            <div class="space-y-2">
+                                                <label class="block text-xs font-medium text-gray-500">Jawaban Anda:</label>
+                                                <textarea name="answers[{{ $soal->id }}]" rows="6" 
+                                                    class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors essay-input"
+                                                    data-soal-id="{{ $soal->id }}"
+                                                    placeholder="Tuliskan jawaban essay Anda di sini...">{{ $answerMap[$soal->id] ?? '' }}</textarea>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </form>
+                </main>
+
+                <!-- Sidebar Overlay (Mobile) -->
+                <div x-show="navOpen" 
+                    @click="navOpen = false"
+                    x-transition:enter="transition-opacity ease-linear duration-300"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition-opacity ease-linear duration-300"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="fixed inset-0 z-40 bg-black/50 lg:hidden" x-cloak></div>
+
+                <!-- Sidebar: Navigasi Soal -->
+                <aside :class="navOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'"
+                    class="fixed inset-y-0 right-0 z-50 w-72 lg:w-72 bg-gray-50 border-l border-gray-200 flex flex-col shrink-0 overflow-hidden transition-transform duration-300 lg:static lg:inset-auto" x-cloak>
+                    <div class="p-5 border-b border-gray-200 bg-white flex items-center justify-between lg:block">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Navigasi Soal</h3>
+                        <button @click="navOpen = false" class="lg:hidden p-1 text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+
+                    <div class="p-5 overflow-y-auto custom-scrollbar flex-1 bg-white lg:bg-transparent">
+                        <div class="grid grid-cols-5 gap-2 mb-6" id="navigator-grid">
+                            @foreach ($ujian->bankSoal->soal as $index => $soal)
+                                <button type="button" 
+                                    class="nav-btn w-full aspect-square rounded-lg border flex items-center justify-center text-xs font-medium transition-all"
+                                    data-index="{{ $index }}"
+                                    data-soal-id="{{ $soal->id }}">
+                                    {{ $index + 1 }}
+                                </button>
+                            @endforeach
+                        </div>
+
+                        <div class="space-y-4 mb-8">
+                            <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Keterangan</h4>
+                            <div class="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-md border-2 border-gray-200"></div>
+                                    <span class="text-[10px] text-gray-500">Belum dijawab</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-md bg-[#ECFDF5] border-2 border-emerald-500"></div>
+                                    <span class="text-[10px] text-gray-500">Sudah dijawab</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-md bg-primary border-2 border-primary"></div>
+                                    <span class="text-[10px] text-gray-500">Sedang dikerjakan</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-md bg-[#FFFBEB] border-2 border-yellow-400"></div>
+                                    <span class="text-[10px] text-gray-500">Ditandai ragu</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-white border border-gray-200 rounded-xl">
+                            <p class="text-[10px] text-gray-400 font-medium mb-2 uppercase tracking-wide">Progress Jawaban</p>
+                            <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
+                                <div id="progress-bar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <p class="text-[10px] font-medium text-gray-600" id="progress-text">0/{{ $ujian->bankSoal->soal->count() }} soal dijawab</p>
+                        </div>
+                    </div>
+
+                    <div class="p-5 border-t border-gray-200 bg-white space-y-3 shrink-0">
+                        <div class="flex items-center justify-between gap-2">
+                            <button type="button" id="prev-btn" class="flex-1 px-3 py-2 border border-gray-200 text-gray-600 text-[10px] font-bold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-30">
+                                PREV
+                            </button>
+                            <button type="button" id="flag-btn" class="px-3 py-2 bg-transparent border border-yellow-400 text-yellow-600 text-[10px] font-bold rounded-lg hover:bg-yellow-50 transition-colors">
+                                ⚑ RAGU
+                            </button>
+                            <button type="button" id="next-btn" class="flex-1 px-3 py-2 border border-gray-200 text-gray-600 text-[10px] font-bold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-30">
+                                NEXT
+                            </button>
+                        </div>
+                        <button type="button" id="finish-btn" class="w-full py-3 bg-primary text-white text-[11px] font-bold rounded-xl hover:bg-primary-dark transition-colors shadow-lg shadow-emerald-900/10">
+                            KUMPULKAN UJIAN
+                        </button>
+                    </div>
+                </aside>
         </div>
 
         <!-- Modals -->
@@ -251,7 +244,7 @@
         </div>
     @else
         <!-- Kondisi Selesai Ujian -->
-        <div class="flex-1 flex items-center justify-center p-6 bg-gray-50">
+        <div class="min-h-full flex items-center justify-center p-6 bg-gray-50 overflow-y-auto py-12">
             <div class="w-full max-w-md bg-white border border-gray-200 rounded-3xl p-10 text-center shadow-sm">
                 <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
                     <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>

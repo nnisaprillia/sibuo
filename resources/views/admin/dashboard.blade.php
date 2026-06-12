@@ -38,7 +38,7 @@
                 <a href="{{ route('admin.penugasan-guru.index') }}" class="text-[10px] text-emerald-500 hover:text-emerald-600 font-medium">Lihat semua →</a>
             </div>
             
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full text-xs">
                     <thead>
                         <tr class="border-b border-gray-200">
