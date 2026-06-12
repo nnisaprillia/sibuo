@@ -52,6 +52,7 @@
                                 {{ $message }}
                             </p>
                         </div>
+                        {{ $slot }}
                     </div>
                 </div>
             </div>
