@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BankSoal extends Model
 {
     protected $table = 'bank_soal';
-    protected $fillable = ['mata_pelajaran_id', 'guru_id', 'nama_bank', 'kode_ujian', 'kode_generated_at', 'durasi', 'jadwal_mulai', 'jadwal_selesai'];
+    protected $fillable = ['mata_pelajaran_id', 'kelas_id', 'guru_id', 'nama_bank', 'kode_ujian', 'kode_generated_at', 'durasi', 'jadwal_mulai', 'jadwal_selesai'];
     protected $casts = [
         'jadwal_mulai' => 'datetime',
         'jadwal_selesai' => 'datetime',
@@ -56,6 +56,11 @@ class BankSoal extends Model
     public function mataPelajaran()
     {
         return $this->belongsTo(MataPelajaran::class);
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class);
     }
 
     public function guru()

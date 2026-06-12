@@ -35,6 +35,30 @@
                     </div>
 
                     <div class="space-y-1">
+                        <label for="kelas_id" class="block text-xs font-medium text-gray-500">Kelas</label>
+                        <select name="kelas_id" id="kelas_id" required
+                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors">
+                            @foreach($kelases as $kls)
+                                <option value="{{ $kls->id }}" {{ old('kelas_id', $bankSoal->kelas_id) == $kls->id ? 'selected' : '' }}>{{ $kls->nama_kelas }}</option>
+                            @endforeach
+                        </select>
+                        @error('kelas_id')
+                            <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="space-y-1">
+                        <label for="nama_bank" class="block text-xs font-medium text-gray-500">Nama Ujian / Bank Soal</label>
+                        <input type="text" name="nama_bank" id="nama_bank" value="{{ old('nama_bank', $bankSoal->nama_bank) }}" required
+                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors">
+                        @error('nama_bank')
+                            <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="space-y-1">
                         <label for="durasi" class="block text-xs font-medium text-gray-500">Durasi (Menit)</label>
                         <input type="number" name="durasi" id="durasi" value="{{ old('durasi', $bankSoal->durasi) }}" required min="1"
                             class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors">
@@ -42,15 +66,6 @@
                             <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                </div>
-
-                <div class="space-y-1">
-                    <label for="nama_bank" class="block text-xs font-medium text-gray-500">Nama Ujian / Bank Soal</label>
-                    <input type="text" name="nama_bank" id="nama_bank" value="{{ old('nama_bank', $bankSoal->nama_bank) }}" required
-                        class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors">
-                    @error('nama_bank')
-                        <p class="text-[10px] text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
