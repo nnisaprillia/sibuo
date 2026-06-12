@@ -29,10 +29,17 @@
         <div class="lg:col-span-8 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-medium text-gray-900">Bank Soal Aktif</h3>
-                <a href="{{ route('guru.bank-soal.create') }}" class="px-3 py-1.5 bg-primary text-white text-[10px] font-medium rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Buat Baru
-                </a>
+                @if($penugasan->isNotEmpty())
+                    <a href="{{ route('guru.bank-soal.create') }}" class="px-3 py-1.5 bg-primary text-white text-[10px] font-medium rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Buat Baru
+                    </a>
+                @else
+                    <button disabled title="Belum ada Mata Pelajaran yang ditugaskan" class="px-3 py-1.5 bg-gray-300 text-gray-500 text-[10px] font-medium rounded-lg flex items-center gap-1.5 cursor-not-allowed">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Buat Baru
+                    </button>
+                @endif
             </div>
             
             <div class="overflow-x-auto">
@@ -91,7 +98,17 @@
                         @empty
                             <tr>
                                 <td colspan="5">
-                                    <x-empty-state entity="bank soal" :route="route('guru.bank-soal.create')" />
+                                    <x-empty-state 
+                                        entity="bank soal" 
+                                        :route="$penugasan->isNotEmpty() ? route('guru.bank-soal.create') : null" 
+                                    />
+                                    @if($penugasan->isEmpty())
+                                        <div class="flex flex-col items-center -mt-8 pb-8">
+                                            <div class="px-3 py-1 bg-red-50 text-red-600 rounded-full text-[10px] font-medium border border-red-100">
+                                                Belum ada Mata Pelajaran yang ditugaskan
+                                            </div>
+                                        </div>
+                                    @endif
                                 </td>
                             </tr>
                         @endforelse

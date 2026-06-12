@@ -24,7 +24,10 @@ class BankSoalController extends Controller
             ->with('mataPelajaran', 'soal')
             ->paginate(10);
 
-        return view('guru.bank-soal.index', compact('bankSoals'));
+        // Check if guru has any assignments
+        $hasAssignments = PenugasanGuru::where('guru_id', $guru->id)->exists();
+
+        return view('guru.bank-soal.index', compact('bankSoals', 'hasAssignments'));
     }
 
     /**
