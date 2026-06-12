@@ -6,10 +6,17 @@
             <h2 class="text-xl font-medium text-gray-900">Daftar Bank Soal</h2>
             <p class="text-xs text-gray-500 mt-1">Kelola paket pertanyaan ujian dan jadwal pengerjaan</p>
         </div>
-        <a href="{{ route('guru.bank-soal.create') }}" class="px-4 py-2 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2 shadow-lg shadow-emerald-900/10">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            Buat Bank Soal
-        </a>
+        @if($hasAssignments)
+            <a href="{{ route('guru.bank-soal.create') }}" class="px-4 py-2 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2 shadow-lg shadow-emerald-900/10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Buat Bank Soal
+            </a>
+        @else
+            <button disabled title="Belum ada Mata Pelajaran yang ditugaskan" class="px-4 py-2 bg-gray-300 text-gray-500 text-xs font-medium rounded-lg flex items-center gap-2 cursor-not-allowed shadow-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Buat Bank Soal
+            </button>
+        @endif
     </div>
 
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
@@ -81,7 +88,17 @@
                     @empty
                         <tr>
                             <td colspan="6">
-                                <x-empty-state entity="bank soal" :route="route('guru.bank-soal.create')" />
+                                <x-empty-state 
+                                    entity="bank soal" 
+                                    :route="$hasAssignments ? route('guru.bank-soal.create') : null" 
+                                />
+                                @if(!$hasAssignments)
+                                    <div class="flex flex-col items-center -mt-8 pb-8">
+                                        <div class="px-3 py-1 bg-red-50 text-red-600 rounded-full text-[10px] font-medium border border-red-100">
+                                            Belum ada Mata Pelajaran yang ditugaskan
+                                        </div>
+                                    </div>
+                                @endif
                             </td>
                         </tr>
                     @endforelse
