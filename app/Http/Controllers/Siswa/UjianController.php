@@ -116,12 +116,17 @@ class UjianController extends Controller
 
         $request->validate([
             'soal_id' => 'required|exists:soal,id',
-            'jawaban' => 'nullable|in:a,b,c,d',
+            'jawaban' => 'nullable|string',
             'marked' => 'nullable',
         ]);
 
         $soal = Soal::findOrFail($request->soal_id);
-        $isBenar = $request->jawaban !== null && $request->jawaban === $soal->jawaban_benar;
+        
+        // Auto-grade only for non-essay questions
+        $isBenar = false;
+        if ($soal->tipe !== 'essay' && $request->jawaban !== null) {
+            $isBenar = $request->jawaban === $soal->jawaban_benar;
+        }
 
         JawabanSiswa::updateOrCreate(
             ['ujian_id' => $ujian->id, 'soal_id' => $soal->id],
@@ -208,16 +213,26 @@ class UjianController extends Controller
 
         $rules = [];
         foreach ($ujian->bankSoal->soal as $soal) {
-            $rules["answers.{$soal->id}"] = ['nullable', 'in:a,b,c,d'];
+            $rules["answers.{$soal->id}"] = ['nullable', 'string'];
         }
 
         $validated = $request->validate($rules);
         $marked = $request->input('marked', []);
 
-        DB::transaction(function () use ($ujian, $validated) {
+        DB::transaction(function () use ($ujian, $validated, $marked) {
+            $correctAnswers = 0;
+
             foreach ($ujian->bankSoal->soal as $soal) {
                 $jawaban = $validated['answers'][$soal->id] ?? null;
-                $isBenar = $jawaban !== null && $jawaban === $soal->jawaban_benar;
+                
+                $isBenar = false;
+                if ($soal->tipe !== 'essay' && $jawaban !== null) {
+                    $isBenar = $jawaban === $soal->jawaban_benar;
+                    if ($isBenar) {
+                        $correctAnswers++;
+                    }
+                }
+                
                 $isMarked = isset($marked[$soal->id]) && in_array($marked[$soal->id], ['1', 1, 'true', true], true);
 
                 JawabanSiswa::updateOrCreate(
@@ -228,14 +243,6 @@ class UjianController extends Controller
                         'marked_for_review' => $isMarked,
                     ]
                 );
-            }
-
-            $correctAnswers = 0;
-            foreach ($ujian->bankSoal->soal as $soal) {
-                $given = $validated['answers'][$soal->id] ?? null;
-                if ($given !== null && $given === $soal->jawaban_benar) {
-                    $correctAnswers++;
-                }
             }
 
             $score = $ujian->bankSoal->soal->count() > 0
@@ -277,8 +284,10 @@ class UjianController extends Controller
         $answers = $ujian->jawabanSiswa->keyBy('soal_id');
 
         foreach ($questions as $soal) {
-            if (isset($answers[$soal->id]) && $answers[$soal->id]->jawaban_siswa === $soal->jawaban_benar) {
-                $correctAnswers++;
+            if ($soal->tipe !== 'essay') {
+                if (isset($answers[$soal->id]) && $answers[$soal->id]->jawaban_siswa === $soal->jawaban_benar) {
+                    $correctAnswers++;
+                }
             }
         }
 

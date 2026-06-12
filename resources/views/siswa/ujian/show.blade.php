@@ -528,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cancelBtn.innerText = 'Lanjutkan Pengerjaan';
             modalTitle.innerText = 'Ujian Belum Lengkap';
             modalTitle.classList.add('text-red-600');
-            modalMessage.innerHTML = '<span class="text-red-500 font-medium">Anda belum bisa mengumpulkan ujian.</span> Masih terdapat soal yang perlu diperbaiki:';
+            modalMessage.innerHTML = '<span class="text-red-500 font-medium">Anda belum bisa mengumpulkan ujian.</span> Semua soal harus terisi dan tidak boleh ada soal yang ditandai ragu-ragu:';
             
             let html = '<div class="mt-4 space-y-4">';
             
@@ -558,7 +558,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 badgeBg: 'bg-white',
                 badgeBorder: 'border-red-200',
                 badgeText: 'text-red-700'
-            }, 'Belum Dijawab & Tidak Ragu', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>');
+            }, 'Belum Dijawab', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>');
 
             // Case 2: Unanswered but Flagged (Yellow)
             html += createGrid(flaggedUnanswered, {
@@ -568,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 badgeBg: 'bg-white',
                 badgeBorder: 'border-amber-200',
                 badgeText: 'text-amber-700'
-            }, 'Belum Diisi & Ragu-Ragu', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-7h.01M9 16h.01"></path></svg>');
+            }, 'Ragu-Ragu & Kosong', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-7h.01M9 16h.01"></path></svg>');
 
             // Case 1: Answered but Flagged (Yellow-Green)
             html += createGrid(flaggedAnswered, {
