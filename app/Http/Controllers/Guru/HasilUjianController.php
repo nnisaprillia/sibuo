@@ -9,10 +9,51 @@ use App\Models\JawabanSiswa;
 use App\Models\Ujian;
 use App\Models\PenugasanGuru;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HasilUjianController extends Controller
 {
+    /**
+     * Update score for a specific essay answer.
+     */
+    public function updateScore(Request $request, JawabanSiswa $jawaban)
+    {
+        $guru = Auth::user();
+        
+        // Verify ownership
+        if ($jawaban->soal->bankSoal->guru_id !== $guru->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        $request->validate([
+            'skor' => 'required|numeric|min:0|max:1',
+        ]);
+
+        DB::transaction(function () use ($request, $jawaban) {
+            $jawaban->update([
+                'skor' => $request->skor,
+                'is_benar' => $request->skor > 0, // Mark as correct if score > 0 for stats
+            ]);
+
+            // Recalculate total score
+            $ujian = $jawaban->ujian;
+            $questions = $ujian->bankSoal->soal;
+            $totalSkor = JawabanSiswa::where('ujian_id', $ujian->id)->sum('skor');
+            
+            $newScore = $questions->count() > 0
+                ? round(($totalSkor / $questions->count()) * 100, 2)
+                : 0;
+
+            $ujian->hasilUjian->update([
+                'nilai' => $newScore
+            ]);
+        });
+
+        return back()->with('success', 'Nilai essay berhasil diperbarui.');
+    }
+
     /**
      * Display a listing of exam results for the guru.
      */

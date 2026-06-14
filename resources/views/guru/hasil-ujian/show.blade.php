@@ -100,36 +100,77 @@
 
                     <p class="text-sm text-gray-800 leading-relaxed mb-6 font-medium">{{ $soal->pertanyaan }}</p>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        @php
-                            $options = ['a' => $soal->pilihan_a, 'b' => $soal->pilihan_b, 'c' => $soal->pilihan_c, 'd' => $soal->pilihan_d];
-                        @endphp
-                        @foreach ($options as $key => $option)
-                            <div class="flex items-start gap-3 p-3 rounded-lg border 
-                                {{ $key === $soal->jawaban_benar ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100' }}
-                                {{ $key === $jawaban && !$isCorrect ? 'bg-red-50 border-red-200' : '' }}">
-                                
-                                <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 
-                                    {{ $key === $soal->jawaban_benar ? 'bg-green-500 text-white' : ($key === $jawaban ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-400') }}">
-                                    {{ strtoupper($key) }}
-                                </span>
-                                
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-xs {{ $key === $soal->jawaban_benar ? 'text-green-900 font-bold' : ($key === $jawaban ? 'text-red-900 font-bold' : 'text-gray-600') }}">
-                                        {{ $option }}
-                                    </p>
-                                    <div class="mt-1 flex items-center gap-1.5">
-                                        @if($key === $soal->jawaban_benar)
-                                            <span class="text-[8px] font-bold text-green-600 uppercase">Kunci Jawaban</span>
-                                        @endif
-                                        @if($key === $jawaban)
-                                            <span class="text-[8px] font-bold {{ $isCorrect ? 'text-green-600' : 'text-red-600' }} uppercase">Pilihan Siswa</span>
-                                        @endif
-                                    </div>
+                    @if($soal->tipe === 'essay')
+                        <div class="space-y-4">
+                            <div class="p-4 bg-gray-50 border border-gray-100 rounded-xl">
+                                <p class="text-[10px] text-gray-400 uppercase font-bold mb-2">Jawaban Siswa:</p>
+                                <div class="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                                    {{ $jawaban ?: '(Tidak ada jawaban)' }}
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
+
+                            <form action="{{ route('guru.hasil-ujian.update-score', $qa->id) }}" method="POST" class="flex items-center gap-4 p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
+                                @csrf
+                                @method('PATCH')
+                                <div class="shrink-0">
+                                    <label class="block text-[10px] text-emerald-700 uppercase font-bold mb-1">Beri Nilai (0 - 1.0)</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" name="skor" step="0.1" min="0" max="1" value="{{ $qa->skor }}"
+                                            class="w-24 h-9 px-3 text-sm border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
+                                        <button type="submit" class="h-9 px-4 bg-emerald-600 text-white text-[10px] font-bold uppercase rounded-lg hover:bg-emerald-700 transition-colors">
+                                            Simpan
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-emerald-600 italic leading-relaxed">
+                                    * Gunakan nilai 0 sampai 1. <br>
+                                    Contoh: 0.5 untuk setengah benar, 1.0 untuk benar penuh.
+                                </div>
+                            </form>
+                        </div>
+                    @else
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            @php
+                                $options = [
+                                    'a' => $soal->pilihan_a, 
+                                    'b' => $soal->pilihan_b, 
+                                    'c' => $soal->pilihan_c, 
+                                    'd' => $soal->pilihan_d,
+                                    'e' => $soal->pilihan_e
+                                ];
+                                if ($soal->tipe === 'tf') {
+                                    $options = ['a' => 'BENAR', 'b' => 'SALAH'];
+                                }
+                            @endphp
+                            @foreach ($options as $key => $option)
+                                @if($option)
+                                    <div class="flex items-start gap-3 p-3 rounded-lg border 
+                                        {{ $key === $soal->jawaban_benar ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100' }}
+                                        {{ $key === $jawaban && !$isCorrect ? 'bg-red-50 border-red-200' : '' }}">
+                                        
+                                        <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 
+                                            {{ $key === $soal->jawaban_benar ? 'bg-green-500 text-white' : ($key === $jawaban ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-400') }}">
+                                            {{ strtoupper($key) }}
+                                        </span>
+                                        
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs {{ $key === $soal->jawaban_benar ? 'text-green-900 font-bold' : ($key === $jawaban ? 'text-red-900 font-bold' : 'text-gray-600') }}">
+                                                {{ $option }}
+                                            </p>
+                                            <div class="mt-1 flex items-center gap-1.5">
+                                                @if($key === $soal->jawaban_benar)
+                                                    <span class="text-[8px] font-bold text-green-600 uppercase">Kunci Jawaban</span>
+                                                @endif
+                                                @if($key === $jawaban)
+                                                    <span class="text-[8px] font-bold {{ $isCorrect ? 'text-green-600' : 'text-red-600' }} uppercase">Pilihan Siswa</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
         @endforeach

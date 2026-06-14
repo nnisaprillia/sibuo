@@ -51,6 +51,7 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
     
     Route::get('/hasil-ujian', \App\Http\Controllers\Guru\HasilUjianController::class . '@index')->name('hasil-ujian.index');
     Route::get('/hasil-ujian/{ujian}', \App\Http\Controllers\Guru\HasilUjianController::class . '@show')->name('hasil-ujian.show');
+    Route::patch('/hasil-ujian/jawaban/{jawaban}/score', [\App\Http\Controllers\Guru\HasilUjianController::class, 'updateScore'])->name('hasil-ujian.update-score');
     Route::get('/bank-soal/{bankSoal}/hasil', \App\Http\Controllers\Guru\HasilUjianController::class . '@byBankSoal')->name('hasil-by-bank-soal');
     Route::get('/bank-soal/{bankSoal}/statistik', \App\Http\Controllers\Guru\HasilUjianController::class . '@statistics')->name('bank-soal.statistik');
 });
