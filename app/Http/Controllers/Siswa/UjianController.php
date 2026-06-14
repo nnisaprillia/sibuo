@@ -124,8 +124,10 @@ class UjianController extends Controller
         
         // Auto-grade only for non-essay questions
         $isBenar = false;
+        $skor = 0;
         if ($soal->tipe !== 'essay' && $request->jawaban !== null) {
             $isBenar = $request->jawaban === $soal->jawaban_benar;
+            $skor = $isBenar ? 1 : 0;
         }
 
         JawabanSiswa::updateOrCreate(
@@ -133,6 +135,7 @@ class UjianController extends Controller
             [
                 'jawaban_siswa' => $request->jawaban,
                 'is_benar' => $isBenar,
+                'skor' => $skor,
                 'marked_for_review' => filter_var($request->marked, FILTER_VALIDATE_BOOLEAN),
             ]
         );
@@ -220,19 +223,19 @@ class UjianController extends Controller
         $marked = $request->input('marked', []);
 
         DB::transaction(function () use ($ujian, $validated, $marked) {
-            $correctAnswers = 0;
+            $totalSkor = 0;
 
             foreach ($ujian->bankSoal->soal as $soal) {
                 $jawaban = $validated['answers'][$soal->id] ?? null;
                 
                 $isBenar = false;
+                $skor = 0;
                 if ($soal->tipe !== 'essay' && $jawaban !== null) {
                     $isBenar = $jawaban === $soal->jawaban_benar;
-                    if ($isBenar) {
-                        $correctAnswers++;
-                    }
+                    $skor = $isBenar ? 1 : 0;
                 }
                 
+                $totalSkor += $skor;
                 $isMarked = isset($marked[$soal->id]) && in_array($marked[$soal->id], ['1', 1, 'true', true], true);
 
                 JawabanSiswa::updateOrCreate(
@@ -240,13 +243,14 @@ class UjianController extends Controller
                     [
                         'jawaban_siswa' => $jawaban,
                         'is_benar' => $isBenar,
+                        'skor' => $skor,
                         'marked_for_review' => $isMarked,
                     ]
                 );
             }
 
             $score = $ujian->bankSoal->soal->count() > 0
-                ? round(($correctAnswers / $ujian->bankSoal->soal->count()) * 100, 2)
+                ? round(($totalSkor / $ujian->bankSoal->soal->count()) * 100, 2)
                 : 0;
 
             $ujian->update([
@@ -279,20 +283,30 @@ class UjianController extends Controller
             return;
         }
 
-        $correctAnswers = 0;
+        $totalSkor = 0;
         $questions = $ujian->bankSoal->soal;
         $answers = $ujian->jawabanSiswa->keyBy('soal_id');
 
         foreach ($questions as $soal) {
+            $skor = 0;
             if ($soal->tipe !== 'essay') {
                 if (isset($answers[$soal->id]) && $answers[$soal->id]->jawaban_siswa === $soal->jawaban_benar) {
-                    $correctAnswers++;
+                    $skor = 1;
                 }
+            } else {
+                // For essay, if already graded, keep the score (though finishExam usually happens before grading)
+                $skor = isset($answers[$soal->id]) ? $answers[$soal->id]->skor : 0;
+            }
+            $totalSkor += $skor;
+
+            // Also update the record if it exists to ensure skor is set
+            if (isset($answers[$soal->id])) {
+                $answers[$soal->id]->update(['skor' => $skor]);
             }
         }
 
         $score = $questions->count() > 0
-            ? round(($correctAnswers / $questions->count()) * 100, 2)
+            ? round(($totalSkor / $questions->count()) * 100, 2)
             : 0;
 
         $ujian->update([

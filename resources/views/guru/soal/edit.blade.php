@@ -16,11 +16,11 @@
                 <p class="text-[10px] text-gray-500 mt-0.5">Perbarui konfigurasi tipe soal dan detail pertanyaan</p>
             </div>
             
-            <form method="POST" action="{{ route('guru.soal.update', [$bankSoal->id, $soal->id]) }}" class="p-5 space-y-6" x-data="{ tipe: '{{ $soal->tipe }}' }">
+            <form method="POST" action="{{ route('guru.soal.update', [$bankSoal->id, $soal->id]) }}" class="p-5 space-y-6" x-data="{ tipe: '{{ $soal->tipe }}', jumlahPilihan: '{{ $soal->jumlah_pilihan ?: 5 }}' }">
                 @csrf
                 @method('PATCH')
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label for="tipe" class="block text-xs font-medium text-gray-500">Tipe Soal</label>
                         <select name="tipe" id="tipe" x-model="tipe" required
@@ -28,6 +28,16 @@
                             <option value="pg">Pilihan Ganda</option>
                             <option value="tf">Benar / Salah (T/F)</option>
                             <option value="essay">Essay / Uraian</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-1" x-show="tipe === 'pg'">
+                        <label for="jumlah_pilihan" class="block text-xs font-medium text-gray-500">Jumlah Pilihan</label>
+                        <select name="jumlah_pilihan" id="jumlah_pilihan" x-model="jumlahPilihan" :required="tipe === 'pg'"
+                            class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors">
+                            <option value="3">3 Pilihan (A-C)</option>
+                            <option value="4">4 Pilihan (A-D)</option>
+                            <option value="5">5 Pilihan (A-E)</option>
                         </select>
                     </div>
                 </div>
@@ -52,15 +62,15 @@
                 <!-- Multiple Choice (PG) Options -->
                 <div x-show="tipe === 'pg'" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @foreach(['a', 'b', 'c', 'd', 'e'] as $key)
-                            <div class="space-y-1">
+                        @foreach(['a', 'b', 'c', 'd', 'e'] as $index => $key)
+                            <div class="space-y-1" x-show="jumlahPilihan > {{ $index }}">
                                 <label for="pilihan_{{ $key }}" class="block text-xs font-medium text-gray-500">Pilihan {{ strtoupper($key) }}</label>
                                 <div class="flex gap-2">
                                     <div class="w-9 h-9 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center text-xs font-bold text-gray-400 shrink-0">
                                         {{ strtoupper($key) }}
                                     </div>
                                     <input type="text" name="pilihan_{{ $key }}" id="pilihan_{{ $key }}" value="{{ old('pilihan_'.$key, $soal->{'pilihan_'.$key}) }}" 
-                                        :required="tipe === 'pg' && '{{ $key }}' !== 'e'"
+                                        :required="tipe === 'pg' && jumlahPilihan > {{ $index }}"
                                         class="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-400 focus:outline-none transition-colors"
                                         placeholder="Masukkan jawaban...">
                                 </div>
@@ -74,8 +84,8 @@
                     <div class="space-y-2 pt-4 border-t border-gray-100">
                         <label class="block text-xs font-medium text-gray-500">Tentukan Jawaban Benar</label>
                         <div class="flex flex-wrap gap-3">
-                            @foreach(['a', 'b', 'c', 'd', 'e'] as $key)
-                                <label class="flex-1 min-w-[80px]">
+                            @foreach(['a', 'b', 'c', 'd', 'e'] as $index => $key)
+                                <label class="flex-1 min-w-[80px]" x-show="jumlahPilihan > {{ $index }}">
                                     <input type="radio" name="jawaban_benar_pg" value="{{ $key }}" class="hidden peer" :required="tipe === 'pg'" 
                                         {{ old('jawaban_benar', $soal->jawaban_benar) == $key ? 'checked' : '' }} @change="updateJawaban('{{ $key }}')">
                                     <div class="cursor-pointer py-2 text-center text-xs font-bold border border-gray-200 rounded-lg bg-gray-50 text-gray-400 peer-checked:bg-green-50 peer-checked:border-green-500 peer-checked:text-green-700 hover:bg-gray-100 transition-all">
@@ -158,4 +168,3 @@
                 }
                 </script>
                 @endpush
-@endsection
