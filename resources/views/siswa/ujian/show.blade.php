@@ -219,6 +219,22 @@
             </x-slot>
         </x-confirm-modal>
 
+        <!-- Fullscreen Entrance Modal -->
+        <div id="fullscreen-prompt-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/85 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl p-8 z-10 max-w-md w-full text-center shadow-2xl relative">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900">Mode Layar Penuh (Fullscreen)</h3>
+                <p class="text-xs text-gray-500 mt-2 leading-relaxed">
+                    Sesi ujian wajib dijalankan dalam mode layar penuh untuk menjaga integritas. Membagi layar (split screen), mengecilkan jendela, atau berpindah aplikasi akan langsung mengunci lembar ujian.
+                </p>
+                <button type="button" id="enter-fullscreen-btn" class="mt-6 w-full h-11 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-900/10">
+                    Masuk Layar Penuh & Kerjakan
+                </button>
+            </div>
+        </div>
+
         <!-- Block Modal for Violations -->
         <div id="block-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
             <div class="absolute inset-0 bg-red-900/90 backdrop-blur-md"></div>
@@ -229,7 +245,9 @@
                         <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900">Pelanggaran Terdeteksi</h3>
-                    <p class="text-xs text-gray-500 mt-2">Anda terdeteksi meninggalkan halaman ujian atau berpindah aplikasi. Masukkan kode ujian untuk melanjutkan.</p>
+                    <p class="text-xs text-gray-500 mt-2">Anda terdeteksi meninggalkan halaman ujian, membagi layar (split screen), atau berpindah aplikasi.</p>
+                    <p id="violation-reason" class="text-[11px] text-red-700 font-semibold mt-2 bg-red-50 py-1.5 px-3 rounded-lg"></p>
+                    <p class="text-[11px] text-gray-400 mt-2">Silakan hubungi pengawas ujian untuk meminta kode ujian terbaru.</p>
                 </div>
                 
                 <div class="space-y-4">
@@ -400,6 +418,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (diff === 0) {
+            if (typeof isExamActive !== 'undefined') isExamActive = false;
             alert('Waktu habis! Jawaban Anda akan otomatis dikirim.');
             document.getElementById('exam-form').submit();
         }
@@ -449,21 +468,76 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 4. Tab Switch Detection
+    // 4. Anti-Cheat: Fullscreen, Split-Screen & Loss of Focus Detection
+    let isLocked = false;
+    let isExamActive = true;
     const blockModal = document.getElementById('block-modal');
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            fetch('{{ route("siswa.ujian.violation", $ujian) }}', { 
-                method: 'POST', 
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } 
-            });
-            blockModal.classList.remove('hidden');
-            blockModal.classList.add('flex');
+    const fullscreenPrompt = document.getElementById('fullscreen-prompt-modal');
+    const violationReason = document.getElementById('violation-reason');
+
+    function triggerViolation(reasonText) {
+        if (isLocked || !isExamActive) return;
+        isLocked = true;
+
+        if (violationReason) {
+            violationReason.innerText = reasonText;
+        }
+
+        fetch('{{ route("siswa.ujian.violation", $ujian) }}', { 
+            method: 'POST', 
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } 
+        }).catch(() => {});
+
+        blockModal.classList.remove('hidden');
+        blockModal.classList.add('flex');
+    }
+
+    // A. Masuk Fullscreen saat tombol prompt ditekan
+    const enterFullscreenBtn = document.getElementById('enter-fullscreen-btn');
+    if (enterFullscreenBtn) {
+        enterFullscreenBtn.addEventListener('click', () => {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
+            if (fullscreenPrompt) {
+                fullscreenPrompt.classList.add('hidden');
+            }
+        });
+    }
+
+    // Sembunyikan prompt jika Fullscreen tidak didukung (contoh: Safari iOS) atau jika sudah fullscreen
+    if (!document.fullscreenEnabled || document.fullscreenElement) {
+        if (fullscreenPrompt) fullscreenPrompt.classList.add('hidden');
+    }
+
+    // B. Deteksi Keluar Fullscreen (Menangkal Split Screen & Unmaximize di Laptop/PC)
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && isExamActive && !isLocked) {
+            triggerViolation('Peringatan: Terdeteksi keluar dari layar penuh atau mengubah ukuran jendela (Split Screen).');
         }
     });
 
+    // C. Deteksi Berpindah Tab / Minimize (Page Visibility API)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && isExamActive && !isLocked) {
+            triggerViolation('Peringatan: Terdeteksi meninggalkan tab ujian atau meminimalkan browser.');
+        }
+    });
+
+    // D. Deteksi Kehilangan Fokus (Menangkal Dua Layar / Klik Jendela Sebelah)
+    window.addEventListener('blur', () => {
+        if (isExamActive && !isLocked) {
+            setTimeout(() => {
+                if (!document.hasFocus() && isExamActive && !isLocked) {
+                    triggerViolation('Peringatan: Kursor berpindah ke layar kedua, aplikasi lain, atau jendela split screen.');
+                }
+            }, 200);
+        }
+    });
+
+    // E. Buka Kunci dengan Token Pengawas
     document.getElementById('unlock-btn').addEventListener('click', () => {
-        const code = document.getElementById('unlock-code').value.toUpperCase();
+        const code = document.getElementById('unlock-code').value.toUpperCase().trim();
         fetch('{{ route("siswa.ujian.verify-code", $ujian) }}', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
@@ -472,15 +546,27 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
+                isLocked = false;
                 blockModal.classList.add('hidden');
                 blockModal.classList.remove('flex');
                 document.getElementById('unlock-code').value = '';
                 document.getElementById('unlock-error').classList.add('hidden');
+
+                // Kembalikan otomatis ke Fullscreen
+                if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                }
             } else {
                 document.getElementById('unlock-error').classList.remove('hidden');
             }
+        })
+        .catch(() => {
+            document.getElementById('unlock-error').classList.remove('hidden');
         });
     });
+
+    // Matikan pengawasan saat proses submit resmi atau navigasi keluar yang sah
+    window.addEventListener('beforeunload', () => { isExamActive = false; });
 
     // 5. Prevent Back & Submit Confirmation
     history.pushState(null, null, location.href);
@@ -587,6 +673,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('confirm-submit-btn').addEventListener('click', () => {
+        isExamActive = false;
         document.getElementById('exam-form').submit();
     });
 
