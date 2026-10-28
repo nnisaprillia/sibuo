@@ -125,12 +125,34 @@
                     </div>
                 </div>
 
-                <!-- Essay Info -->
-                <div x-show="tipe === 'essay'" class="p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
-                    <p class="text-[11px] text-emerald-800 leading-relaxed">
-                        <strong class="block mb-1">Catatan Tipe Essay:</strong>
-                        Untuk tipe soal Essay, pilihan jawaban dikosongkan. Siswa akan diberikan area teks untuk menulis jawaban mereka secara naratif.
-                    </p>
+                <!-- Essay Configuration -->
+                <div x-show="tipe === 'essay'" class="space-y-4 p-5 bg-emerald-50/70 border border-emerald-100 rounded-xl">
+                    <div class="flex items-center gap-2 text-emerald-800 font-semibold text-xs mb-1">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        Konfigurasi Penilaian Esai Hibrida (TF-IDF & Kata Kunci)
+                    </div>
+
+                    <div>
+                        <label for="jawaban_benar_essay" class="block text-xs font-medium text-gray-700 mb-1">
+                            Kunci Jawaban Model / Rujukan Guru <span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-[10px] text-gray-500 mb-2">Teks rujukan standar yang digunakan untuk mengukur kedekatan semantik jawaban siswa via Cosine Similarity.</p>
+                        <textarea id="jawaban_benar_essay" rows="3"
+                            class="w-full text-xs border border-gray-200 rounded-lg p-3 bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                            placeholder="Tuliskan kunci jawaban model di sini..."
+                            @input="updateJawaban($event.target.value)">{{ old('jawaban_benar', $soal->jawaban_benar) }}</textarea>
+                    </div>
+
+                    <div>
+                        <label for="kata_kunci" class="block text-xs font-medium text-gray-700 mb-1">
+                            Rubrik Kata Kunci Wajib <span class="text-xs text-gray-400 font-normal">(Opsional, pisahkan dengan koma)</span>
+                        </label>
+                        <p class="text-[10px] text-gray-500 mb-2">Istilah materi yang wajib ada dalam jawaban siswa. Kata kunci akan dicek secara leksikal.</p>
+                        <input type="text" name="kata_kunci" id="kata_kunci"
+                            value="{{ old('kata_kunci', $soal->kata_kunci) }}"
+                            class="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                            placeholder="Contoh: lan, jaringan komputer, area terbatas, switch, utp">
+                    </div>
                 </div>
 
                 <input type="hidden" name="jawaban_benar" id="jawaban_benar_hidden" value="{{ old('jawaban_benar', $soal->jawaban_benar) }}">

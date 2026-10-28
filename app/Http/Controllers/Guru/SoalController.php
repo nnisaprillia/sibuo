@@ -49,6 +49,7 @@ class SoalController extends Controller
             'pilihan_d' => 'nullable|string',
             'pilihan_e' => 'nullable|string',
             'jawaban_benar' => 'required|string',
+            'kata_kunci' => 'nullable|string',
         ]);
 
         $validated['bank_soal_id'] = $bankSoal->id;
@@ -123,6 +124,7 @@ class SoalController extends Controller
             'pilihan_d' => 'nullable|string',
             'pilihan_e' => 'nullable|string',
             'jawaban_benar' => 'required|string',
+            'kata_kunci' => 'nullable|string',
         ]);
 
         // Nullify unused options based on jumlah_pilihan

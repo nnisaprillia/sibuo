@@ -8,6 +8,8 @@ use App\Models\HasilUjian;
 use App\Models\JawabanSiswa;
 use App\Models\Soal;
 use App\Models\Ujian;
+use App\Services\EssayScoringService;
+use App\Services\FisherYatesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -122,12 +124,29 @@ class UjianController extends Controller
 
         $soal = Soal::findOrFail($request->soal_id);
         
-        // Auto-grade only for non-essay questions
         $isBenar = false;
         $skor = 0;
+        $skorRekomendasi = null;
+        $similarityScore = null;
+        $keywordScore = null;
+        $matchedKeywords = null;
+
         if ($soal->tipe !== 'essay' && $request->jawaban !== null) {
             $isBenar = $request->jawaban === $soal->jawaban_benar;
             $skor = $isBenar ? 1 : 0;
+        } elseif ($soal->tipe === 'essay' && !empty($request->jawaban)) {
+            $essayService = new EssayScoringService();
+            $eval = $essayService->evaluate(
+                $request->jawaban,
+                $soal->jawaban_benar,
+                $soal->kata_kunci
+            );
+            $skorRekomendasi = $eval['final_suggested_score'];
+            $similarityScore = $eval['similarity_score'];
+            $keywordScore = $eval['keyword_score'];
+            $matchedKeywords = $eval['matched_keywords'];
+            $skor = $skorRekomendasi;
+            $isBenar = $skor >= 0.7;
         }
 
         JawabanSiswa::updateOrCreate(
@@ -136,6 +155,10 @@ class UjianController extends Controller
                 'jawaban_siswa' => $request->jawaban,
                 'is_benar' => $isBenar,
                 'skor' => $skor,
+                'skor_rekomendasi' => $skorRekomendasi,
+                'similarity_score' => $similarityScore,
+                'keyword_score' => $keywordScore,
+                'matched_keywords' => $matchedKeywords,
                 'marked_for_review' => filter_var($request->marked, FILTER_VALIDATE_BOOLEAN),
             ]
         );
@@ -183,9 +206,10 @@ class UjianController extends Controller
 
         $ujian->load('bankSoal.mataPelajaran', 'bankSoal.guru', 'bankSoal.soal', 'jawabanSiswa.soal', 'hasilUjian');
 
-        // Randomisasi soal per siswa (consistent order using ujian_id as seed)
-        $randomizedSoal = $ujian->bankSoal->soal->shuffle($ujian->id);
-        $ujian->bankSoal->setRelation('soal', $randomizedSoal);
+        // Randomisasi urutan soal per siswa menggunakan Algoritma Fisher-Yates O(n)
+        $soalArray = $ujian->bankSoal->soal->all();
+        $randomizedSoal = FisherYatesService::shuffle($soalArray, (int) $ujian->id);
+        $ujian->bankSoal->setRelation('soal', collect($randomizedSoal));
 
         if ($ujian->status === 'ongoing') {
             $expireAt = $ujian->waktu_mulai->copy()->addMinutes($ujian->bankSoal->durasi);
@@ -225,14 +249,33 @@ class UjianController extends Controller
         DB::transaction(function () use ($ujian, $validated, $marked) {
             $totalSkor = 0;
 
+            $essayService = new EssayScoringService();
+
             foreach ($ujian->bankSoal->soal as $soal) {
                 $jawaban = $validated['answers'][$soal->id] ?? null;
                 
                 $isBenar = false;
                 $skor = 0;
+                $skorRekomendasi = null;
+                $similarityScore = null;
+                $keywordScore = null;
+                $matchedKeywords = null;
+
                 if ($soal->tipe !== 'essay' && $jawaban !== null) {
                     $isBenar = $jawaban === $soal->jawaban_benar;
                     $skor = $isBenar ? 1 : 0;
+                } elseif ($soal->tipe === 'essay' && !empty($jawaban)) {
+                    $eval = $essayService->evaluate(
+                        $jawaban,
+                        $soal->jawaban_benar,
+                        $soal->kata_kunci
+                    );
+                    $skorRekomendasi = $eval['final_suggested_score'];
+                    $similarityScore = $eval['similarity_score'];
+                    $keywordScore = $eval['keyword_score'];
+                    $matchedKeywords = $eval['matched_keywords'];
+                    $skor = $skorRekomendasi;
+                    $isBenar = $skor >= 0.7;
                 }
                 
                 $totalSkor += $skor;
@@ -244,6 +287,10 @@ class UjianController extends Controller
                         'jawaban_siswa' => $jawaban,
                         'is_benar' => $isBenar,
                         'skor' => $skor,
+                        'skor_rekomendasi' => $skorRekomendasi,
+                        'similarity_score' => $similarityScore,
+                        'keyword_score' => $keywordScore,
+                        'matched_keywords' => $matchedKeywords,
                         'marked_for_review' => $isMarked,
                     ]
                 );
@@ -286,22 +333,43 @@ class UjianController extends Controller
         $totalSkor = 0;
         $questions = $ujian->bankSoal->soal;
         $answers = $ujian->jawabanSiswa->keyBy('soal_id');
+        $essayService = new EssayScoringService();
 
         foreach ($questions as $soal) {
             $skor = 0;
+            $jawabanObj = $answers[$soal->id] ?? null;
+            $jawabanText = $jawabanObj?->jawaban_siswa;
+
             if ($soal->tipe !== 'essay') {
-                if (isset($answers[$soal->id]) && $answers[$soal->id]->jawaban_siswa === $soal->jawaban_benar) {
+                if ($jawabanObj && $jawabanText === $soal->jawaban_benar) {
                     $skor = 1;
                 }
             } else {
-                // For essay, if already graded, keep the score (though finishExam usually happens before grading)
-                $skor = isset($answers[$soal->id]) ? $answers[$soal->id]->skor : 0;
+                if ($jawabanObj && $jawabanObj->skor > 0) {
+                    // Jika sudah dinilai sebelumnya, pertahankan
+                    $skor = $jawabanObj->skor;
+                } elseif (!empty($jawabanText)) {
+                    // Jalankan evaluasi NLP hybrid jika belum ada skor
+                    $eval = $essayService->evaluate(
+                        $jawabanText,
+                        $soal->jawaban_benar,
+                        $soal->kata_kunci
+                    );
+                    $skor = $eval['final_suggested_score'];
+                    $jawabanObj?->update([
+                        'skor' => $skor,
+                        'skor_rekomendasi' => $eval['final_suggested_score'],
+                        'similarity_score' => $eval['similarity_score'],
+                        'keyword_score' => $eval['keyword_score'],
+                        'matched_keywords' => $eval['matched_keywords'],
+                        'is_benar' => $skor >= 0.7,
+                    ]);
+                }
             }
             $totalSkor += $skor;
 
-            // Also update the record if it exists to ensure skor is set
-            if (isset($answers[$soal->id])) {
-                $answers[$soal->id]->update(['skor' => $skor]);
+            if ($jawabanObj && $soal->tipe !== 'essay') {
+                $jawabanObj->update(['skor' => $skor]);
             }
         }
 

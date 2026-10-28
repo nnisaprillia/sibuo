@@ -102,29 +102,101 @@
 
                     @if($soal->tipe === 'essay')
                         <div class="space-y-4">
+                            <!-- Kunci Jawaban Model Guru -->
+                            <div class="p-4 bg-emerald-50/60 border border-emerald-100 rounded-xl">
+                                <p class="text-[10px] text-emerald-800 uppercase font-bold mb-1.5 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    Kunci Jawaban Rujukan (Guru):
+                                </p>
+                                <div class="text-xs text-emerald-950 whitespace-pre-line leading-relaxed">
+                                    {{ $soal->jawaban_benar ?: '(Belum ada kunci jawaban rujukan)' }}
+                                </div>
+                                @if(!empty($soal->kata_kunci))
+                                    <div class="mt-2.5 pt-2 border-t border-emerald-100 flex flex-wrap items-center gap-1.5">
+                                        <span class="text-[9px] text-emerald-700 font-bold uppercase">Kata Kunci Rubrik:</span>
+                                        @foreach(explode(',', $soal->kata_kunci) as $kw)
+                                            <span class="px-2 py-0.5 bg-white border border-emerald-200 text-emerald-800 rounded text-[9px] font-medium">
+                                                {{ trim($kw) }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Jawaban Siswa -->
                             <div class="p-4 bg-gray-50 border border-gray-100 rounded-xl">
                                 <p class="text-[10px] text-gray-400 uppercase font-bold mb-2">Jawaban Siswa:</p>
-                                <div class="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                                <div class="text-sm text-gray-800 whitespace-pre-line leading-relaxed">
                                     {{ $jawaban ?: '(Tidak ada jawaban)' }}
                                 </div>
                             </div>
 
-                            <form action="{{ route('guru.hasil-ujian.update-score', $qa->id) }}" method="POST" class="flex items-center gap-4 p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
-                                @csrf
-                                @method('PATCH')
-                                <div class="shrink-0">
-                                    <label class="block text-[10px] text-emerald-700 uppercase font-bold mb-1">Beri Nilai (0 - 1.0)</label>
+                            <!-- Panel Analisis NLP & Rekomendasi Nilai -->
+                            <div class="p-4 bg-indigo-50/50 border border-indigo-100 rounded-xl">
+                                <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-2">
-                                        <input type="number" name="skor" step="0.1" min="0" max="1" value="{{ $qa->skor }}"
-                                            class="w-24 h-9 px-3 text-sm border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
-                                        <button type="submit" class="h-9 px-4 bg-emerald-600 text-white text-[10px] font-bold uppercase rounded-lg hover:bg-emerald-700 transition-colors">
-                                            Simpan
-                                        </button>
+                                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                        <span class="text-xs font-bold text-indigo-900">Analisis NLP (TF-IDF & Cosine Similarity)</span>
+                                    </div>
+                                    <span class="px-2.5 py-0.5 bg-indigo-100 text-indigo-800 text-[10px] font-bold rounded-full">
+                                        Rekomendasi Sistem: {{ round(($qa->skor_rekomendasi ?? $qa->skor) * 100) }}%
+                                    </span>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs mt-3">
+                                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
+                                        <p class="text-[9px] text-gray-400 uppercase font-bold">Kemiripan Semantik (Cosine)</p>
+                                        <p class="text-base font-bold text-indigo-600 mt-0.5">
+                                            {{ round(($qa->similarity_score ?? 0) * 100) }}%
+                                        </p>
+                                    </div>
+                                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
+                                        <p class="text-[9px] text-gray-400 uppercase font-bold">Ketercakupan Kata Kunci</p>
+                                        <p class="text-base font-bold text-indigo-600 mt-0.5">
+                                            {{ round(($qa->keyword_score ?? 0) * 100) }}%
+                                        </p>
                                     </div>
                                 </div>
-                                <div class="text-[10px] text-emerald-600 italic leading-relaxed">
-                                    * Gunakan nilai 0 sampai 1. <br>
-                                    Contoh: 0.5 untuk setengah benar, 1.0 untuk benar penuh.
+
+                                @if(!empty($qa->matched_keywords) && is_array($qa->matched_keywords))
+                                    <div class="mt-3 flex flex-wrap items-center gap-1">
+                                        <span class="text-[9px] text-gray-500 font-semibold">Kata Kunci Ditemukan:</span>
+                                        @foreach($qa->matched_keywords as $mkw)
+                                            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[9px] font-semibold rounded">
+                                                ✓ {{ $mkw }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Form Konfirmasi / Override Nilai Guru -->
+                            <form action="{{ route('guru.hasil-ujian.update-score', $qa->id) }}" method="POST" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-gray-50 border border-gray-200 rounded-xl"
+                                x-data="{ skorVal: '{{ $qa->skor }}' }">
+                                @csrf
+                                @method('PATCH')
+                                <div class="flex items-center gap-3">
+                                    <div>
+                                        <label class="block text-[10px] text-gray-700 uppercase font-bold mb-1">Nilai Guru (0.0 - 1.0)</label>
+                                        <div class="flex items-center gap-2">
+                                            <input type="number" name="skor" step="0.05" min="0" max="1" x-model="skorVal"
+                                                class="w-24 h-9 px-3 text-sm font-semibold border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
+                                            <button type="submit" class="h-9 px-4 bg-emerald-600 text-white text-[10px] font-bold uppercase rounded-lg hover:bg-emerald-700 transition-colors shadow-sm">
+                                                Simpan Nilai
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    @if(isset($qa->skor_rekomendasi))
+                                        <button type="button" @click="skorVal = '{{ $qa->skor_rekomendasi }}'"
+                                            class="mt-4 px-3 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 text-[10px] font-semibold rounded-lg transition-colors flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                            Gunakan Rekomendasi ({{ $qa->skor_rekomendasi }})
+                                        </button>
+                                    @endif
+                                </div>
+                                <div class="text-[10px] text-gray-400 italic">
+                                    * Guru memiliki wewenang penuh untuk mengubah nilai di atas jika jawaban siswa menyajikan penalaran logis alternatif.
                                 </div>
                             </form>
                         </div>
